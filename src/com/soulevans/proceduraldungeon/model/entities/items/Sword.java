@@ -2,7 +2,7 @@ package com.soulevans.proceduraldungeon.model.entities.items;
 
 import com.soulevans.proceduraldungeon.model.damage.Damage;
 import com.soulevans.proceduraldungeon.model.damage.DamageType;
-import com.soulevans.proceduraldungeon.model.living.Living;
+import com.soulevans.proceduraldungeon.model.entities.living.Living;
 
 import java.util.Random;
 

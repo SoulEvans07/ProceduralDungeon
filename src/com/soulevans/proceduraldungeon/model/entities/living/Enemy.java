@@ -1,4 +1,4 @@
-package com.soulevans.proceduraldungeon.model.living;
+package com.soulevans.proceduraldungeon.model.entities.living;
 
 import com.soulevans.proceduraldungeon.Game;
 import com.soulevans.proceduraldungeon.model.entities.items.Sword;

@@ -3,7 +3,7 @@ package com.soulevans.proceduraldungeon.model.map;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
-import com.soulevans.proceduraldungeon.model.living.Living;
+import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;

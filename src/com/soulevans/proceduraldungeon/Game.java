@@ -1,9 +1,9 @@
 package com.soulevans.proceduraldungeon;
 
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
-import com.soulevans.proceduraldungeon.model.living.Enemy;
-import com.soulevans.proceduraldungeon.model.living.Living;
-import com.soulevans.proceduraldungeon.model.living.Player;
+import com.soulevans.proceduraldungeon.model.entities.living.Enemy;
+import com.soulevans.proceduraldungeon.model.entities.living.Living;
+import com.soulevans.proceduraldungeon.model.entities.living.Player;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.map.DungeonMap;
 import javafx.scene.canvas.GraphicsContext;
