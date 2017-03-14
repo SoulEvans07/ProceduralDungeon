@@ -6,6 +6,7 @@ import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.entities.items.Item;
 import com.soulevans.proceduraldungeon.model.entities.items.ItemEntity;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 public class Chest extends Tile{
     private Item loot;
     private boolean open;
+
+    private static Image imageOpen = new Image("img/chest_open.png"); // View
+    private static Image imageClosed = new Image("img/chest_closed.png");
 
     public Chest(int x, int y, Item loot) {
         super(x, y);
@@ -36,10 +40,11 @@ public class Chest extends Tile{
 
     @Override
     public void drawTile(GraphicsContext gc) {
-        if(open)
-            gc.setFill(Color.valueOf("#978b47"));
-        else
-            gc.setFill(Color.valueOf("#ffd900"));
+        gc.setFill(Color.valueOf("#e8e8e8"));
         gc.fillRect(x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+        if(open)
+            gc.drawImage(imageOpen, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+        else
+            gc.drawImage(imageClosed, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 }

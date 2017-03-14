@@ -8,7 +8,8 @@ public abstract class Weapon extends Item{
     protected DamageType damageType;
     protected int baseDamage;
 
-    public Weapon(DamageType type, int baseDamage){
+    public Weapon(String name, DamageType type, int baseDamage){
+        this.name = name;
         this.damageType = type;
         this.baseDamage = baseDamage;
     }
@@ -17,6 +18,6 @@ public abstract class Weapon extends Item{
 
     @Override
     public String toString(){
-        return this.getClass().getSimpleName() + "::" + baseDamage + " " + damageType.name().toLowerCase();
+        return this.name + "::" + this.getClass().getSimpleName() + "::" + baseDamage + " " + damageType.name().toLowerCase();
     }
 }

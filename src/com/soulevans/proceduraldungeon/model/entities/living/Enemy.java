@@ -4,9 +4,11 @@ import com.soulevans.proceduraldungeon.Game;
 import com.soulevans.proceduraldungeon.model.entities.items.Sword;
 import com.soulevans.proceduraldungeon.model.map.Tile;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Enemy extends Living {
+    private static Image image = new Image("img/enemy.png");
 
     public Enemy(Tile pos, int hp){
         super(pos, hp);
@@ -19,8 +21,8 @@ public class Enemy extends Living {
         gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE, Game.TILESIZE*0.2);
         gc.setFill(Color.GREEN);
         gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE * ((double)healthPoints / (double)baseHP), Game.TILESIZE*0.2);
-        gc.setFill(Color.ORANGE);
-        gc.fillRect(pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+
+        gc.drawImage(image, pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 
     @Override

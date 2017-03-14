@@ -3,13 +3,16 @@ package com.soulevans.proceduraldungeon.model.map;
 import com.soulevans.proceduraldungeon.Game;
 import com.soulevans.proceduraldungeon.model.entities.items.Item;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
 public class Door extends Tile{
-
     private boolean open;
+
+    private static Image imageOpen = new Image("img/door_open.png"); // View
+    private static Image imageClosed = new Image("img/door_closed.png");
 
     public Door(int x, int y){
         super(x, y);
@@ -27,10 +30,11 @@ public class Door extends Tile{
 
     @Override
     public void drawTile(GraphicsContext gc) {
-        if(open)
-            gc.setFill(Color.valueOf("#aa8f7d"));
-        else
-            gc.setFill(Color.valueOf("#6d472f"));
+        gc.setFill(Color.valueOf("#e8e8e8"));
         gc.fillRect(x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+        if(open)
+            gc.drawImage(imageOpen, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+        else
+            gc.drawImage(imageClosed, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 }

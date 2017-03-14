@@ -5,8 +5,10 @@ import com.soulevans.proceduraldungeon.model.entities.GameObject;
 import com.soulevans.proceduraldungeon.model.entities.items.Item;
 import com.soulevans.proceduraldungeon.model.entities.items.ItemEntity;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 public abstract class Tile {
+    protected static Image image;
     public int x;
     public int y;
 

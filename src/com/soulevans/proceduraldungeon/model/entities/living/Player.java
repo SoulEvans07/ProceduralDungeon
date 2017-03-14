@@ -10,10 +10,12 @@ import com.soulevans.proceduraldungeon.model.map.Door;
 import com.soulevans.proceduraldungeon.model.map.Floor;
 import com.soulevans.proceduraldungeon.model.map.Tile;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 
 public class Player extends Living {
+    private static Image image = new Image("img/link.png");
+
     public Player(Tile pos, int hp){
         super(pos, hp);
         this.weapon = new Sword(100);
@@ -21,8 +23,7 @@ public class Player extends Living {
 
     @Override
     public void drawObject(GraphicsContext gc){ // View
-        gc.setFill(Color.BLUE);
-        gc.fillRect(pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+        gc.drawImage(image, pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 
     public void onKeyReleased(KeyEvent event){
