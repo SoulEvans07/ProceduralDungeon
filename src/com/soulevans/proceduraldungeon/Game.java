@@ -91,6 +91,11 @@ public class Game {
             Logger.log("Reset");
             init(width, height);
         }
+
+        if(event.getCode().getName().equals("I")){
+            Logger.log("[Inventory]");
+            player.listInventory();
+        }
     }
 
     public void onKeyReleased(KeyEvent event){

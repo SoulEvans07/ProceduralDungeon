@@ -3,6 +3,7 @@ package com.soulevans.proceduraldungeon.model.map;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
+import com.soulevans.proceduraldungeon.model.entities.items.Sword;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -26,7 +27,13 @@ public class DungeonMap {
 
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                Tile tmp = new Floor(x, y);
+                Tile tmp;
+                if(x == 10 && y == 10)
+                    tmp = new Door(x, y);
+                else if(x == 5 && y == 5)
+                    tmp = new Chest(x, y, new Sword(1000));
+                else
+                    tmp = new Floor(x, y);
                 map.put(new MPoint(x, y), tmp);
             }
         }
@@ -41,6 +48,10 @@ public class DungeonMap {
         Tile tile = this.getTile(x, y);
         entity.setPos(tile);
         tile.setEntity(entity);
+    }
+
+    public void removeGameObject(GameObject entity){
+        entities.remove(entity);
     }
 
     public void removeDead(){

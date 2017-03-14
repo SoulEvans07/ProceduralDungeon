@@ -12,8 +12,7 @@ public class Floor extends Tile {
     }
 
     public Floor(int x, int y, GameObject entity){
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.entity = entity;
     }
 

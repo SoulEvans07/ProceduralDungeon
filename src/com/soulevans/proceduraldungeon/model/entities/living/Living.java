@@ -1,16 +1,18 @@
 package com.soulevans.proceduraldungeon.model.entities.living;
 
 import com.soulevans.proceduraldungeon.Game;
+import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.damage.Damage;
 import com.soulevans.proceduraldungeon.model.damage.DamageType;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
+import com.soulevans.proceduraldungeon.model.entities.items.Item;
 import com.soulevans.proceduraldungeon.model.entities.items.Weapon;
-import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.map.Tile;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class Living extends GameObject {
     protected int viewRange;
@@ -20,11 +22,14 @@ public abstract class Living extends GameObject {
     protected int baseHP;
 
     protected Weapon weapon;
+    protected ArrayList<Item> inventory;
 
     public Living(Tile pos, int hp) {
         super(pos);
         this.baseHP = hp;
         this.healthPoints = this.baseHP;
+
+        inventory = new ArrayList<>();
     }
 
     public int getBaseHP(){
@@ -59,10 +64,16 @@ public abstract class Living extends GameObject {
     protected void step(Tile tile){
         Tile prev = this.pos;
         pos = tile;
+
+        // TODO: change to stepOn/stepOff
         if(prev != null)
             prev.setEntity(null);
         if(tile != null)
             tile.setEntity(this);
+    }
+
+    public void listInventory(){
+        Logger.log( Arrays.toString(inventory.toArray()) );
     }
 
     public int getViewRange() {

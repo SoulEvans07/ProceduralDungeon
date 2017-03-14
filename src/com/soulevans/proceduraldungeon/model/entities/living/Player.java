@@ -3,8 +3,11 @@ package com.soulevans.proceduraldungeon.model.entities.living;
 import com.soulevans.proceduraldungeon.Game;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
-import com.soulevans.proceduraldungeon.model.entities.items.Item;
+import com.soulevans.proceduraldungeon.model.entities.items.ItemEntity;
 import com.soulevans.proceduraldungeon.model.entities.items.Sword;
+import com.soulevans.proceduraldungeon.model.map.Chest;
+import com.soulevans.proceduraldungeon.model.map.Door;
+import com.soulevans.proceduraldungeon.model.map.Floor;
 import com.soulevans.proceduraldungeon.model.map.Tile;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
@@ -39,14 +42,30 @@ public class Player extends Living {
 
         GameObject entity = tile.getEntity();
         if(entity == null){
-            this.step(tile);
+
+            // TODO: make TileEntity parent class
+            if(tile instanceof Door){
+                boolean go = ((Door) tile).interact(this.inventory);
+                if(go)
+                    this.step(tile);
+            }
+            if(tile instanceof Chest){
+                boolean go = ((Chest) tile).interact(this.inventory);
+                if(go)
+                    this.step(tile);
+            }
+            if( tile instanceof Floor)
+                this.step(tile);
         } else {
 //            Logger.log(entity.toString());
             if(entity instanceof Enemy){
                 this.attack((Enemy) entity);
             }
-            if(entity instanceof Item){
-                // TODO: living inventory
+            if(entity instanceof ItemEntity){
+                this.inventory.add(tile.pickUpItem());
+
+                this.step(tile);
+                // TODO: Living inventory
             }
         }
     }

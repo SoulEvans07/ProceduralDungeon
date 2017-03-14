@@ -6,6 +6,10 @@ import javafx.scene.paint.Color;
 
 public class Wall extends Tile {
 
+    public Wall(int x, int y) {
+        super(x, y);
+    }
+
     @Override
     public void drawTile(GraphicsContext gc) {
         gc.setFill(Color.valueOf("#666666"));

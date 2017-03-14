@@ -4,7 +4,7 @@ import com.soulevans.proceduraldungeon.model.damage.Damage;
 import com.soulevans.proceduraldungeon.model.damage.DamageType;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 
-public abstract class Weapon {
+public abstract class Weapon extends Item{
     protected DamageType damageType;
     protected int baseDamage;
 
@@ -14,4 +14,9 @@ public abstract class Weapon {
     }
 
     public abstract Damage getDamage(Living user);
+
+    @Override
+    public String toString(){
+        return this.getClass().getSimpleName() + "::" + baseDamage + " " + damageType.name().toLowerCase();
+    }
 }
