@@ -1,4 +1,6 @@
 # ProceduralDungeon
+
+### Abstract
 Nowadays more and more game development company – mostly indie – start to use procedural content generation in their games. This means that they don't create all the content with a development team by hand, but uses a cerfully fine tuned algorithm with some random element instead. This has the advantege of endless replayability offered to the player. And this is many games key feature in the industry.
 
 This unknown element that gives the generation random nature makes possible that the player is always facing new challanges every single time the game starts. This prevents that we never offer rehearsed, repetitive and in the end boring gameplay.
