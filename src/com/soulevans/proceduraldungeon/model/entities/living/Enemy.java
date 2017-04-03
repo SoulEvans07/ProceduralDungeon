@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Enemy extends Living {
-    private static Image image = new Image("img/enemy.png");
+    private static Image image = new Image("imgs/enemy.png");
 
     public Enemy(Tile pos, int hp){
         super(pos, hp);

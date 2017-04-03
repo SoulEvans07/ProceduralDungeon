@@ -16,7 +16,7 @@ public class PerlinNoise
       float height = 0.0f;
       for (int octave = 1; octave <= octaves; octave++)
          height += noise(x, y, z, octave);
-      return height;
+      return 0.5f + height/2.0f;
    }
 
    public final float turbulentNoise(float x, float y, float z, int octaves)
@@ -28,7 +28,7 @@ public class PerlinNoise
          if (h < 0.0f) h *= -1.0f;
          height += h;
       }
-      return height;
+      return 0.5f + height/2.0f;
    }
 
    public final float noise(float x, float y, float z)

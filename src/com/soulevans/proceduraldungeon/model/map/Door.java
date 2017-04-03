@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class Door extends Tile{
     private boolean open;
 
-    private static Image imageOpen = new Image("img/door_open.png"); // View
-    private static Image imageClosed = new Image("img/door_closed.png");
+    private static Image imageOpen = new Image("imgs/door_open.png"); // View
+    private static Image imageClosed = new Image("imgs/door_closed.png");
 
     public Door(int x, int y){
         super(x, y);

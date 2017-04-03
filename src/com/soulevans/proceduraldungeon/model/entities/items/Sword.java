@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import java.util.Random;
 
 public class Sword extends Weapon {
-    private static Image image = new Image("img/ironsword.png");
+    private static Image image = new Image("imgs/ironsword.png");
 
     public Sword(int baseDamage){
         this("Sword", baseDamage);

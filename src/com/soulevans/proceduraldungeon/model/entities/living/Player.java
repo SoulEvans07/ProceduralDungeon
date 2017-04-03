@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 
 public class Player extends Living {
-    private static Image image = new Image("img/link.png");
+    private static Image image = new Image("imgs/link.png");
 
     public Player(Tile pos, int hp){
         super(pos, hp);

@@ -15,8 +15,8 @@ public class Chest extends Tile{
     private Item loot;
     private boolean open;
 
-    private static Image imageOpen = new Image("img/chest_open.png"); // View
-    private static Image imageClosed = new Image("img/chest_closed.png");
+    private static Image imageOpen = new Image("imgs/chest_open.png"); // View
+    private static Image imageClosed = new Image("imgs/chest_closed.png");
 
     public Chest(int x, int y, Item loot) {
         super(x, y);
