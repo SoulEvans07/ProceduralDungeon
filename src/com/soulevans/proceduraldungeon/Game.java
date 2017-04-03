@@ -1,63 +1,50 @@
 package com.soulevans.proceduraldungeon;
 
+import com.soulevans.proceduraldungeon.logger.Logger;
+import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
-import com.soulevans.proceduraldungeon.model.entities.living.Enemy;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import com.soulevans.proceduraldungeon.model.entities.living.Player;
-import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.map.DungeonMap;
 import com.soulevans.proceduraldungeon.model.map.MapLoader;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class Game {
     private int mapWidth, mapHeight;
     private double width, height;
     public static double TILESIZE;
+    private Canvas canvas;
 
     private DungeonMap map;
 
     private Player player;
-    private ArrayList<GameObject> gameObjects;
 
     private static Game instance;
 
     private Game(){}
 
-    public void init(double w, double h){
-        this.mapWidth = 40; // Model
-        this.mapHeight = 40; // Model
-
-        map = MapLoader.loadEmpty(40,40);
-
-        this.width = w; // View
-        this.height = h; // View
-
-        Game.TILESIZE = Math.min(width/mapWidth, height/mapHeight);
-//        Game.TILESIZE = 30;
+    public void init(double w, double h, Canvas canvas){
+        this.canvas = canvas;
 
         player = new Player(null, 1000);
-        map.addGameObject(0,0, player);
+        map = MapLoader.loadMap(1, player);
 
-        gameObjects = new ArrayList<>();
-        ArrayList<Living> living = new ArrayList<>();
+        Game.TILESIZE = 30;
 
-        // adding random enemy
-        Random rand = new Random();
-        for(int i = 0; i < 5; i++){
-            Enemy enemy = new Enemy(null, 600);
-            map.addGameObject(rand.nextInt(mapWidth), rand.nextInt(mapHeight), enemy);
-            living.add(enemy);
+        this.width = map.mapWidth * Game.TILESIZE; // View
+        this.height = map.mapHeight * Game.TILESIZE; // View
+
+        canvas.setWidth(this.width);
+        canvas.setHeight(this.height);
+
+        for(GameObject object : map.entities){
+            if(object instanceof Living) {
+                ((Living) object).lookAround();
+            }
         }
-
-        for (Living aLiving : living) {
-            aLiving.lookAround();
-        }
-        player.lookAround();
     }
 
     public static Game getInstance(){
@@ -94,12 +81,6 @@ public class Game {
 
 //    Control    #######################################################################################################
 
-    public void tick(){
-//        Logger.log(LogType.EVENT, "tick");
-        for(int i = 0; i < gameObjects.size(); i++){
-            gameObjects.get(i).tick();
-        }
-    }
 
     public void onKeyPressed(KeyEvent event){
 //        Logger.log(LogType.EVENT, "keyPressed: " + event.getCode().getName());
@@ -107,7 +88,7 @@ public class Game {
 
         if(event.getCode().getName().equals("R")) {
             Logger.log("Reset");
-            init(width, height);
+            init(width, height, canvas);
         }
 
         if(event.getCode().getName().equals("I")){
@@ -122,12 +103,22 @@ public class Game {
         map.removeDead();
     }
 
+
+    VPoint canvasCenter = new VPoint(0, 0);
+    VPoint lastPos = new VPoint(0, 0);
     public void onMousePressed(MouseEvent event){
 //        Logger.log(LogType.EVENT,"mousePressed [" + event.getX() + ", " + event.getY() + "]");
+        lastPos = new VPoint(event.getX(), event.getY());
     }
 
     public void onMouseDragged(MouseEvent event){
 //        Logger.log(LogType.EVENT,"mouseDragged [" + event.getX() + ", " + event.getY() + "]");
+//        Logger.log(LogType.EVENT, "move: [" + (lastPos.x - event.getX()) + ", " + (lastPos.y - event.getY())+ "]");
+        canvasCenter.x -= (lastPos.x - event.getX()) * scale;
+        canvasCenter.y -= (lastPos.y - event.getY()) * scale;
+        lastPos = new VPoint(event.getX(), event.getY());
+        canvas.setTranslateX(canvasCenter.x);
+        canvas.setTranslateY(canvasCenter.y);
     }
 
     public void onMouseReleased(MouseEvent event){

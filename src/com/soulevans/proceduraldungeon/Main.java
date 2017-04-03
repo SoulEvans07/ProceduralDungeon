@@ -27,7 +27,7 @@ public class Main extends Application {
 
             tickCounter++;
             if(tickCounter == 20){
-                Game.getInstance().tick();
+//                Game.getInstance().tick();
                 tickCounter = 0;
             }
         }
@@ -48,9 +48,9 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, width, height));
         primaryStage.show();
 
-        canvas.setOnMousePressed(event -> Game.getInstance().onMousePressed(event));
-        canvas.setOnMouseDragged(event -> Game.getInstance().onMouseDragged(event));
-        canvas.setOnMouseReleased(event -> Game.getInstance().onMouseReleased(event));
+        primaryStage.getScene().setOnMousePressed(event -> Game.getInstance().onMousePressed(event));
+        primaryStage.getScene().setOnMouseDragged(event -> Game.getInstance().onMouseDragged(event));
+        primaryStage.getScene().setOnMouseReleased(event -> Game.getInstance().onMouseReleased(event));
         primaryStage.getScene().setOnKeyPressed(event -> Game.getInstance().onKeyPressed(event));
         primaryStage.getScene().setOnKeyReleased(event -> Game.getInstance().onKeyReleased(event));
 
@@ -66,7 +66,7 @@ public class Main extends Application {
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.GRAY);
 
-        Game.getInstance().init(width, height);
+        Game.getInstance().init(width, height, gc.getCanvas());
     }
 
 
@@ -75,7 +75,7 @@ public class Main extends Application {
 
         Game.getInstance().drawGame(gc);
 
-        frameRateMeter.drawFPS(gc, height);
+        //frameRateMeter.drawFPS(gc, height);
     }
 
     private void clearCanvas(GraphicsContext gc){

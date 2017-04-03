@@ -13,6 +13,8 @@ import java.util.Map;
 public class DungeonMap {
     public Map<MPoint, Tile> map;
     public ArrayList<GameObject> entities;
+    public int mapWidth;
+    public int mapHeight;
 
     public DungeonMap(){
         map = new HashMap<>();
