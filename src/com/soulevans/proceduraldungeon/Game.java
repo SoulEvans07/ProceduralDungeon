@@ -36,7 +36,8 @@ public class Game {
         this.width = w; // View
         this.height = h; // View
 
-        this.TILESIZE = Math.min(width/mapWidth, height/mapHeight);
+//        Game.TILESIZE = Math.min(width/mapWidth, height/mapHeight);
+        Game.TILESIZE = 30;
 
         player = new Player(null, 1000);
         map.addGameObject(0,0, player);
@@ -71,8 +72,21 @@ public class Game {
 
 //    View    ##########################################################################################################
 
+    public static double scale = 1;
     public void drawGame(GraphicsContext gc){
+        gc.getCanvas().setScaleX(scale);
+        gc.getCanvas().setScaleY(scale);
         map.drawMap(gc);
+
+    }
+
+    public static void zoom(String z){
+        if(z.equals("Add")) {
+            scale += 0.01;
+        }
+        if(z.equals("Minus") || z.equals("Subtract")) {
+            scale -= 0.01;
+        }
     }
 
 
@@ -87,6 +101,8 @@ public class Game {
 
     public void onKeyPressed(KeyEvent event){
 //        Logger.log(LogType.EVENT, "keyPressed: " + event.getCode().getName());
+        Game.zoom(event.getCode().getName());
+
         if(event.getCode().getName().equals("R")) {
             Logger.log("Reset");
             init(width, height);
