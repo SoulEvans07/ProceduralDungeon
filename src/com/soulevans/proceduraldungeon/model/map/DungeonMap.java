@@ -3,7 +3,6 @@ package com.soulevans.proceduraldungeon.model.map;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
-import com.soulevans.proceduraldungeon.model.entities.items.Sword;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -12,33 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DungeonMap {
-    private int width;
-    private int height;
-
     public Map<MPoint, Tile> map;
     public ArrayList<GameObject> entities;
 
-    public DungeonMap(int _width, int _height){
-        width = _width;
-        height = _height;
-
+    public DungeonMap(){
         map = new HashMap<>();
         entities = new ArrayList<>();
+    }
 
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                Tile tmp;
-                if(x == 10 && y == 10)
-                    tmp = new Door(x, y);
-                else if(x == 5 && y == 5)
-                    tmp = new Chest(x, y, new Sword(1000));
-                else if(y == 10 && (x == 9 || x == 11))
-                    tmp = new Wall(x, y);
-                else
-                    tmp = new Floor(x, y);
-                map.put(new MPoint(x, y), tmp);
-            }
-        }
+    public DungeonMap(Map<MPoint, Tile> _map){
+        this.map = _map;
+        this.entities = new ArrayList<>();
+    }
+
+    public void clearMap(){
+        map.clear();
+        entities.clear();
     }
 
     public Tile getTile(int x, int y){
@@ -53,13 +41,14 @@ public class DungeonMap {
     }
 
     public void removeGameObject(GameObject entity){
+        entity.getPos().removeEntity();
         entities.remove(entity);
     }
 
     public void removeDead(){
         for(int i = entities.size()-1; i >= 0; i--){
             if(entities.get(i) instanceof Living && ((Living) entities.get(i)).getHP() < 0){
-                entities.get(i).getPos().setEntity(null);
+                entities.get(i).getPos().removeEntity();
                 entities.remove(i);
             }
         }

@@ -33,6 +33,10 @@ public abstract class Tile {
         this.entity = entity;
     }
 
+    public void removeEntity(){
+        this.entity = null;
+    }
+
     public GameObject getEntity(){
         return entity;
     }

@@ -67,7 +67,7 @@ public abstract class Living extends GameObject {
 
         // TODO: change to stepOn/stepOff
         if(prev != null)
-            prev.setEntity(null);
+            prev.removeEntity();
         if(tile != null)
             tile.setEntity(this);
     }
