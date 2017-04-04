@@ -27,7 +27,6 @@ public class Main extends Application {
 
             tickCounter++;
             if(tickCounter == 20){
-//                Game.getInstance().tick();
                 tickCounter = 0;
             }
         }
