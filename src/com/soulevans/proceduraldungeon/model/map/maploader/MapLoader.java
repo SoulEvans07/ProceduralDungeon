@@ -129,11 +129,12 @@ public class MapLoader {
             dist = minRoomDist + random.nextInt(roomDistRange);
 
             // drop around the edge
-            ArrayList<MPoint> drops = getDrop(mapWidth, mapHeight);
+            ArrayList<MPoint> drops = getDrop(mapWidth-w-1, mapHeight-h-1);
             for(MPoint drop : drops) {
-                if(STEP_BY_STEP_GEN & LOG_GEN) {
-                    Logger.log("drop start: " + drop);
+                if(LOG_GEN) {
+                    Logger.log("drop start: " + drop + " room: [" +w+", "+h+"]");
                 }
+
                 MPoint lastOff = new MPoint(drop);
                 VPoint off = new VPoint(lastOff);
                 room = new Room(w, h);
@@ -166,7 +167,7 @@ public class MapLoader {
 
                 // are we done?
                 if (room.checkCollision(shadowMap)) {
-                    if(STEP_BY_STEP_GEN & LOG_GEN) {
+                    if(LOG_GEN) {
                         Logger.log("done: " + room);
                     }
                     break;
