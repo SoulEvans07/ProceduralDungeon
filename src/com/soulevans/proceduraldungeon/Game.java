@@ -6,7 +6,7 @@ import com.soulevans.proceduraldungeon.model.entities.GameObject;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import com.soulevans.proceduraldungeon.model.entities.living.Player;
 import com.soulevans.proceduraldungeon.model.map.DungeonMap;
-import com.soulevans.proceduraldungeon.model.map.MapLoader;
+import com.soulevans.proceduraldungeon.model.map.maploader.MapLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
@@ -36,7 +36,7 @@ public class Game {
         this.canvas = canvas;
 
         player = new Player(null, 1000);
-        map = MapLoader.loadMap(2, player);
+        map = MapLoader.loadRandom(2, player);
 
         Game.TILESIZE = 32;
         this.width = map.mapWidth * Game.TILESIZE; // View
