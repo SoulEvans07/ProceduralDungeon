@@ -66,8 +66,8 @@ public class MapLoader {
     public static DungeonMap loadRandom(int lvl, Player player){
         DungeonMap dungeon = null;
         ArrayList<String> stringMap = new ArrayList<>();
-        int width = 25;
-        int height = 25;
+        int width = 50;
+        int height = 50;
 
         for(int y = 0; y < height; y++){
             String line = "";
@@ -96,7 +96,7 @@ public class MapLoader {
     private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap){
         ArrayList<Room> rooms = new ArrayList<>();
         ArrayList<String> shadowMap = new ArrayList<>(stringMap);
-        int roomCount = 10;
+        int roomCount = 20;
         int minWidth = 3;
         int minHeight = 3;
         int widthRange = 4;
@@ -127,9 +127,10 @@ public class MapLoader {
             w = minWidth + random.nextInt(widthRange);
             h = minHeight + random.nextInt(heightRange);
             dist = minRoomDist + random.nextInt(roomDistRange);
+            room = new Room(w, h);
 
             // drop around the edge
-            ArrayList<MPoint> drops = getDrop(mapWidth-w-1, mapHeight-h-1);
+            ArrayList<MPoint> drops = rotate(getDrop(mapWidth-w-1, mapHeight-h-1), i*((2*w+2*h)));
             for(MPoint drop : drops) {
                 if(LOG_GEN) {
                     Logger.log("drop start: " + drop + " room: [" +w+", "+h+"]");
@@ -137,7 +138,6 @@ public class MapLoader {
 
                 MPoint lastOff = new MPoint(drop);
                 VPoint off = new VPoint(lastOff);
-                room = new Room(w, h);
                 room.setOffset((int) Math.floor(off.x), (int) Math.floor(off.y));
 
                 // drop down
@@ -233,6 +233,21 @@ public class MapLoader {
                 line = line.substring(0, x) + c;
             stringMap.set(y, line);
         }
+    }
+
+    public static <T> ArrayList<T> rotate(ArrayList<T> aL, int shift)
+    {
+        if (aL.size() == 0)
+            return aL;
+
+        T element = null;
+        for(int i = 0; i < shift; i++) {
+            // remove last element, add it to front of the ArrayList
+            element = aL.remove( aL.size() - 1 );
+            aL.add(0, element);
+        }
+
+        return aL;
     }
 
     private static DungeonMap parseMap(ArrayList<String> stringMap, Player player){

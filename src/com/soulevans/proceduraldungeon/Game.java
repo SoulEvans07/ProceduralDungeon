@@ -38,7 +38,7 @@ public class Game {
         player = new Player(null, 1000);
         map = MapLoader.loadRandom(2, player);
 
-        Game.TILESIZE = 32;
+        Game.TILESIZE = 16;
         this.width = map.mapWidth * Game.TILESIZE; // View
         this.height = map.mapHeight * Game.TILESIZE; // View
 
