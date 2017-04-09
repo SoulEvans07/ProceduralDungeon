@@ -155,40 +155,37 @@ public class Game {
     public void onScroll(ScrollEvent event){
 //        Logger.log(LogType.EVENT,"scroll: " + event.getTextDeltaY());
 //        Logger.log(LogType.EVENT,"scrollon: [" + event.getX() + ", " + event.getY() + "][" + centerMoved.x + ", " + centerMoved.y + "]");
-        zoom(event.getTextDeltaY());
-
-        double distDiff = scale - 1.0;
-        VPoint now = new VPoint(event.getX(), event.getY());
-
-        VPoint diff = new VPoint(origo.x - now.x,origo.y - now.y);
-        diff.x *= distDiff;
-        diff.y *= distDiff;
-
-        canvas.setTranslateX(centerMoved.x + diff.x);
-        canvas.setTranslateY(centerMoved.y + diff.y);
-
-//        now = translate(now);
-//        origo = new VPoint(width/2 * scale, height/2 * scale);
-
+//        zoom(event.getTextDeltaY());
 //
-//        System.out.println("------------------------------------------");
-//        System.out.println("canvas: ["+ width+", "+height+"]");
-//        System.out.println("window: [800, 800]");
-//        System.out.println("D: "+diff);
-//        System.out.println("scale: " + scale + " distDiff: " + distDiff);
-
-//        System.out.println("deltaD: " + diff);
-//        System.out.println("last: "+lastPos);
-//        System.out.println("center bef: "+centerMoved);
+//        double distDiff = scale - 1.0;
+//        VPoint now = new VPoint(event.getX(), event.getY());
 //
-//        centerMoved.x += diff.x;
-//        centerMoved.y += diff.y;
-//        lastPos = now;
+//        VPoint diff = new VPoint(origo.x - now.x,origo.y - now.y);
+//        diff.x *= distDiff;
+//        diff.y *= distDiff;
 //
-//        System.out.println("center aft: "+centerMoved);
-//        System.out.println("new: "+lastPos);
+//        canvas.setTranslateX(centerMoved.x + diff.x);
+//        canvas.setTranslateY(centerMoved.y + diff.y);
 //
-
-
+////        now = translate(now);
+////        origo = new VPoint(width/2 * scale, height/2 * scale);
+//
+////
+////        System.out.println("------------------------------------------");
+////        System.out.println("canvas: ["+ width+", "+height+"]");
+////        System.out.println("window: [800, 800]");
+////        System.out.println("D: "+diff);
+////        System.out.println("scale: " + scale + " distDiff: " + distDiff);
+//
+////        System.out.println("deltaD: " + diff);
+////        System.out.println("last: "+lastPos);
+////        System.out.println("center bef: "+centerMoved);
+////
+////        centerMoved.x += diff.x;
+////        centerMoved.y += diff.y;
+////        lastPos = now;
+////
+////        System.out.println("center aft: "+centerMoved);
+////        System.out.println("new: "+lastPos);
     }
 }
