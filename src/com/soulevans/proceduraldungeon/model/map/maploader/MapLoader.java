@@ -116,8 +116,10 @@ public class MapLoader {
         room.setOffset(centerX - (w/2), centerY -(h/2));
 
         room.placeShadow(dist, shadowMap);
-        Logger.log("dist:"+dist);
-        printMap(shadowMap);
+        if(LOG_GEN) {
+            Logger.log("dist:"+dist);
+            printMap(shadowMap);
+        }
 
         rooms.add(room);
 
@@ -174,10 +176,10 @@ public class MapLoader {
             // final check
             if (room.checkCollision(shadowMap)) {
                 room.placeShadow(dist, shadowMap);
-                Logger.log("dist:" + dist);
                 rooms.add(room);
             }
             if(LOG_GEN) {
+                Logger.log("dist:" + dist);
                 printMap(shadowMap);
             }
         }
