@@ -17,6 +17,7 @@ import javafx.util.Duration;
 public class Main extends Application {
     private static final int fps = 60;
     private GraphicsContext graphicsContext;
+    private Canvas canvas;
     private FPSCounter frameRateMeter;
 
     private Timeline frames = new Timeline(new KeyFrame(Duration.millis(1000 / Main.fps), new EventHandler<ActionEvent>() {
@@ -40,7 +41,7 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
         Group root = new Group();
 
-        Canvas canvas = new Canvas(width, height);
+        canvas = new Canvas(width, height);
         graphicsContext = canvas.getGraphicsContext2D();
 
         root.getChildren().add(canvas);
@@ -61,7 +62,6 @@ public class Main extends Application {
         frames.play();
     }
 
-
     private void init(GraphicsContext gc){
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.GRAY);
@@ -69,7 +69,8 @@ public class Main extends Application {
         Game.getInstance().init(width, height, gc.getCanvas());
     }
 
-
+    int x = 0;
+    int y = 0;
     private void drawLoop(GraphicsContext gc) {
         clearCanvas(gc);
 

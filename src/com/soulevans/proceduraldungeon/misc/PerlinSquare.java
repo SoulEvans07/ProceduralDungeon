@@ -5,10 +5,18 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class PerlinSquare {
+    private float xo, yo, zo;
     private PerlinNoise noise;
 
     public PerlinSquare(){
         noise = new PerlinNoise();
+        xo = yo = zo = 0;
+    }
+
+    public void offset(float x, float y, float z) {
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
     }
 
 
@@ -29,10 +37,12 @@ public class PerlinSquare {
         }
     }
 
-    public void drawNoise(GraphicsContext gc, double x, double y){
+    public double drawNoise(GraphicsContext gc, double x, double y, double size){
         double scale = 0.01;
-        double gray = (1 + noise.noise((float) (x*scale), (float) (y*scale), 0)) / 2;
+        double gray = (1 + noise.noise((float) (x*scale)+xo, (float) (y*scale)+yo, 0)) / 2;
         gc.setStroke(Color.gray(gray));
-        gc.strokeRect(x, y, 1, 1);
+        gc.setFill(Color.gray(gray));
+        gc.fillRect(x, y, size, size);
+        return gray;
     }
 }

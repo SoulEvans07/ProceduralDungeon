@@ -1,6 +1,7 @@
 package com.soulevans.proceduraldungeon;
 
 import com.soulevans.proceduraldungeon.logger.Logger;
+import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
@@ -12,20 +13,19 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
 
 public class Game {
-    private int mapWidth, mapHeight;
     private double width, height;
     public static final double MAGNITUDE = 0.01;
     public static double scale = 1;
     private VPoint centerMoved;
     private VPoint lastPos;
     private VPoint origo;
-    public static double TILESIZE;
-    private Canvas canvas;
+    public static double TILESIZE = 16;
+    public Canvas canvas;
 
     private DungeonMap map;
-
     private Player player;
 
     private static Game instance;
@@ -38,7 +38,6 @@ public class Game {
         player = new Player(null, 1000);
         map = MapLoader.loadRandom(2, player);
 
-        Game.TILESIZE = 16;
         this.width = map.mapWidth * Game.TILESIZE; // View
         this.height = map.mapHeight * Game.TILESIZE; // View
 
@@ -78,6 +77,21 @@ public class Game {
         gc.getCanvas().setScaleY(scale);
         map.drawMap(gc);
 
+        drawNoise(gc, 0.5);
+    }
+
+    public void drawNoise(GraphicsContext gc, double opacity){
+        if(MapLoader.noiseSpace != null && MapLoader.noiseSpace.size() > 0) {
+            for (int y = 0; y < map.mapHeight; y++) {
+                for (int x = 0; x < map.mapWidth; x++) {
+                    MPoint tmp = new MPoint(x, y);
+                    double gray = MapLoader.noiseSpace.get(tmp);
+                    gc.setStroke(Color.gray(gray, opacity));
+                    gc.setFill(Color.gray(gray, opacity));
+                    gc.fillRect(x * Game.TILESIZE, y * Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
+                }
+            }
+        }
     }
 
     public static void zoom(String z){

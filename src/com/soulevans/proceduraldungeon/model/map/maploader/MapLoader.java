@@ -1,13 +1,18 @@
 package com.soulevans.proceduraldungeon.model.map.maploader;
 
+import com.soulevans.proceduraldungeon.Game;
+import com.soulevans.proceduraldungeon.Main;
 import com.soulevans.proceduraldungeon.logger.LogType;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
+import com.soulevans.proceduraldungeon.model.base.PerlinNoise;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
 import com.soulevans.proceduraldungeon.model.entities.items.Sword;
 import com.soulevans.proceduraldungeon.model.entities.living.Enemy;
 import com.soulevans.proceduraldungeon.model.entities.living.Player;
 import com.soulevans.proceduraldungeon.model.map.*;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,21 +22,24 @@ import java.util.*;
 public class MapLoader {
     public static final boolean LOG_GEN = false;
     public static final boolean STEP_BY_STEP_GEN = false;
+    private static PerlinNoise noise = new PerlinNoise();
+    private static float xo, yo, zo;
+    public static HashMap<MPoint, Double> noiseSpace = new HashMap<>();
 
     private static final String[] levels = {"level_one.map", "level_two.map"};
 
-    public MapLoader(){
+    public MapLoader() {
 
     }
 
-    public static DungeonMap loadMap(int lvl, Player player){
+    public static DungeonMap loadMap(int lvl, Player player) {
         DungeonMap dungeon = null;
         Map<MPoint, Tile> map = new HashMap<>();
 
         String line;
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(MapLoader.class.getClassLoader().getResourceAsStream("maps/" + levels[lvl - 1])))
-        ){
+        ) {
             ArrayList<String> stringMap = new ArrayList<>();
             while ((line = br.readLine()) != null) {
                 stringMap.add(line.toLowerCase());
@@ -45,11 +53,11 @@ public class MapLoader {
         return dungeon;
     }
 
-    public static DungeonMap loadEmpty(int _width, int _height){
+    public static DungeonMap loadEmpty(int _width, int _height) {
         Map<MPoint, Tile> map = new HashMap<>();
 
-        for(int y = 0; y < _height; y++){
-            for(int x = 0; x < _width; x++){
+        for (int y = 0; y < _height; y++) {
+            for (int x = 0; x < _width; x++) {
                 Tile tmp;
                 tmp = new Floor(x, y);
                 map.put(new MPoint(x, y), tmp);
@@ -63,20 +71,21 @@ public class MapLoader {
         return dungeon;
     }
 
-    public static DungeonMap loadRandom(int lvl, Player player){
+    public static DungeonMap loadRandom(int lvl, Player player) {
         DungeonMap dungeon = null;
         ArrayList<String> stringMap = new ArrayList<>();
         int width = 50;
         int height = 50;
 
-        for(int y = 0; y < height; y++){
+        resetNoise(width * Game.TILESIZE, height * Game.TILESIZE);
+
+        for (int y = 0; y < height; y++) {
             String line = "";
-            for(int x = 0; x < width; x++){
+            for (int x = 0; x < width; x++) {
                 line += "_";
             }
             stringMap.add(line);
         }
-
 //        Room room = new Room(10, 10);
 //        room.addDoor(9, 10);
 //        room.addDoor(10, 5);
@@ -85,26 +94,25 @@ public class MapLoader {
 //        room.addChest(3, 3);
 //        room.setOffset(3, 7);
 //        room.placeRoom(stringMap);
-
         generateRooms(width, height, stringMap);
-
+        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
 
         replaceTile(1, 1, 'p', stringMap);
         return parseMap(stringMap, player);
     }
 
-    private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap){
+    private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap) {
         ArrayList<Room> rooms = new ArrayList<>();
         ArrayList<String> shadowMap = new ArrayList<>(stringMap);
-        int roomCount = 20;
+        int roomCount = 30;
         int minWidth = 3;
         int minHeight = 3;
-        int widthRange = 4;
-        int heightRange = 4;
+        int widthRange = 5;
+        int heightRange = 5;
         int minRoomDist = 1;
         int roomDistRange = 2;
-        int centerX = (int)(mapWidth / 2.0);
-        int centerY = (int)(mapHeight / 2.0);
+        int centerX = (int) (mapWidth / 2.0);
+        int centerY = (int) (mapHeight / 2.0);
         MPoint center = new MPoint(centerX, centerY);
 
         Random random = new Random();
@@ -113,27 +121,27 @@ public class MapLoader {
         int h = minHeight + random.nextInt(heightRange);
         int dist = minRoomDist + random.nextInt(roomDistRange);
         Room room = new Room(w, h);
-        room.setOffset(centerX - (w/2), centerY -(h/2));
+        room.setOffset(centerX - (w / 2), centerY - (h / 2));
 
         room.placeShadow(dist, shadowMap);
-        if(LOG_GEN) {
-            Logger.log("dist:"+dist);
+        if (LOG_GEN) {
+            Logger.log("dist:" + dist);
             printMap(shadowMap);
         }
 
         rooms.add(room);
 
-        for(int i = 0; i < roomCount-1; i++){
+        for (int i = 0; i < roomCount - 1; i++) {
             w = minWidth + random.nextInt(widthRange);
             h = minHeight + random.nextInt(heightRange);
             dist = minRoomDist + random.nextInt(roomDistRange);
             room = new Room(w, h);
 
             // drop around the edge
-            ArrayList<MPoint> drops = rotate(getDrop(mapWidth-w-1, mapHeight-h-1), i*((2*w+2*h)));
-            for(MPoint drop : drops) {
-                if(LOG_GEN) {
-                    Logger.log("drop start: " + drop + " room: [" +w+", "+h+"]");
+            ArrayList<MPoint> drops = rotate(getDrop(mapWidth - w - 1, mapHeight - h - 1), i * ((2 * w + 2 * h)));
+            for (MPoint drop : drops) {
+                if (LOG_GEN) {
+                    Logger.log("drop start: " + drop + " room: [" + w + ", " + h + "]");
                 }
 
                 MPoint lastOff = new MPoint(drop);
@@ -146,8 +154,8 @@ public class MapLoader {
                     lastOff = new MPoint(off);
 
                     double d = off.dist(center);
-                    if(d < 1) {
-                        if(LOG_GEN) {
+                    if (d < 1) {
+                        if (LOG_GEN) {
                             Logger.log(LogType.NOTICE, "no further then: " + off);
                         }
                         break;
@@ -157,8 +165,8 @@ public class MapLoader {
                     off.y += (center.y - off.y) / d;
 
                     room.setOffset((int) Math.floor(off.x), (int) Math.floor(off.y));
-                    if(STEP_BY_STEP_GEN & LOG_GEN) {
-                       room.placeShadow(dist, testMap);
+                    if (STEP_BY_STEP_GEN & LOG_GEN) {
+                        room.placeShadow(dist, testMap);
                         printMap(testMap);
                     }
 
@@ -167,7 +175,7 @@ public class MapLoader {
 
                 // are we done?
                 if (room.checkCollision(shadowMap)) {
-                    if(LOG_GEN) {
+                    if (LOG_GEN) {
                         Logger.log("done: " + room);
                     }
                     break;
@@ -179,18 +187,36 @@ public class MapLoader {
                 room.placeShadow(dist, shadowMap);
                 rooms.add(room);
             }
-            if(LOG_GEN) {
+            if (LOG_GEN) {
                 Logger.log("dist:" + dist);
                 printMap(shadowMap);
             }
         }
 
-        for(Room r : rooms){
+        for (Room r : rooms) {
             r.placeRoom(stringMap);
         }
     }
 
-    private static ArrayList<MPoint> getDrop(int width, int height){
+    public static void offsetNoise(float x, float y, float z) {
+        xo = x;
+        yo = y;
+        zo = z;
+    }
+
+    public static void fillNoiseSpace(int mapWidth, int mapHeight, GraphicsContext gc){
+        double scale = 0.01;
+        for(int y = 0; y < (mapHeight*Game.TILESIZE); y+=Game.TILESIZE){
+            for(int x = 0; x < mapWidth*Game.TILESIZE; x+=Game.TILESIZE){
+                MPoint temp = new MPoint((int)(x / Game.TILESIZE),(int) (y / Game.TILESIZE));
+                double gray = (1 + noise.noise((float) (x*scale)+xo, (float) (y*scale)+yo, 0)) / 2;
+                noiseSpace.put(temp, gray);
+            }
+        }
+    }
+
+
+    private static ArrayList<MPoint> getDrop(int width, int height) {
         ArrayList<MPoint> drop = new ArrayList<>();
 
         drop.add(new MPoint(0, 0));
@@ -199,33 +225,39 @@ public class MapLoader {
         }
 
         drop.add(new MPoint(width, 0));
-        for (int j = 1; j < height; j++){
+        for (int j = 1; j < height; j++) {
             drop.add(new MPoint(width, j));
         }
 
         drop.add(new MPoint(width, height));
-        for (int i = width-1; i > 0; i--) {
+        for (int i = width - 1; i > 0; i--) {
             drop.add(new MPoint(i, height));
         }
 
         drop.add(new MPoint(0, height));
-        for (int j = height-1; j > 0 ; j--){
+        for (int j = height - 1; j > 0; j--) {
             drop.add(new MPoint(0, j));
         }
 
         return drop;
     }
 
-    private static void printMap(ArrayList<String> map){
+    private static void printMap(ArrayList<String> map) {
         String array = Arrays.toString(map.toArray());
         array = array.replaceAll(", ", ",\n");
         array = array.substring(1);
-//        array = array.replace("]]]", "]]\n");
         Logger.log(array);
     }
 
-    public static void replaceTile(int x, int y, char c, ArrayList<String> stringMap){
-        if(y >= 0 && y < stringMap.size()) {
+    public static void resetNoise(double width, double height){
+        Random random = new Random();
+        double offx = random.nextDouble() * width;
+        double offy = random.nextDouble() * height;
+        offsetNoise((float)offx, (float) offy, 0);
+    }
+
+    public static void replaceTile(int x, int y, char c, ArrayList<String> stringMap) {
+        if (y >= 0 && y < stringMap.size()) {
             String line = stringMap.get(y);
             if (x >= 0 && x + 1 < line.length())
                 line = line.substring(0, x) + c + line.substring(x + 1);
@@ -235,36 +267,35 @@ public class MapLoader {
         }
     }
 
-    public static <T> ArrayList<T> rotate(ArrayList<T> aL, int shift)
-    {
+    public static <T> ArrayList<T> rotate(ArrayList<T> aL, int shift) {
         if (aL.size() == 0)
             return aL;
 
         T element = null;
-        for(int i = 0; i < shift; i++) {
+        for (int i = 0; i < shift; i++) {
             // remove last element, add it to front of the ArrayList
-            element = aL.remove( aL.size() - 1 );
+            element = aL.remove(aL.size() - 1);
             aL.add(0, element);
         }
 
         return aL;
     }
 
-    private static DungeonMap parseMap(ArrayList<String> stringMap, Player player){
+    private static DungeonMap parseMap(ArrayList<String> stringMap, Player player) {
         DungeonMap dungeon = null;
         Map<MPoint, Tile> map = new HashMap<>();
 
         int maxX = 0;
-        for(int y = 0; y < stringMap.size(); y++){
+        for (int y = 0; y < stringMap.size(); y++) {
             String line = stringMap.get(y);
-            if(maxX < line.length())
+            if (maxX < line.length())
                 maxX = line.length();
 
-            for(int x = 0; x < line.length(); x++){
+            for (int x = 0; x < line.length(); x++) {
                 char c = line.charAt(x);
                 Tile tmp;
 
-                switch (c){
+                switch (c) {
                     case '#':
                         tmp = new Wall(x, y);
                         break;
@@ -286,16 +317,16 @@ public class MapLoader {
         dungeon.mapWidth = maxX;
         dungeon.mapHeight = stringMap.size();
 
-        for(int y = 0; y < stringMap.size(); y++) {
+        for (int y = 0; y < stringMap.size(); y++) {
             String line = stringMap.get(y);
             for (int x = 0; x < line.length(); x++) {
                 char c = line.charAt(x);
-                if(c == 'e') {
+                if (c == 'e') {
                     Enemy enemy = new Enemy(null, 600);
                     dungeon.addGameObject(x, y, enemy);
                 }
-                if(c == 'p')
-                    dungeon.addGameObject(x,y, player);
+                if (c == 'p')
+                    dungeon.addGameObject(x, y, player);
             }
         }
 
