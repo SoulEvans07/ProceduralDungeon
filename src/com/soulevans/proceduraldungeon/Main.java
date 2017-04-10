@@ -69,8 +69,6 @@ public class Main extends Application {
         Game.getInstance().init(width, height, gc.getCanvas());
     }
 
-    int x = 0;
-    int y = 0;
     private void drawLoop(GraphicsContext gc) {
         clearCanvas(gc);
 

@@ -7,6 +7,8 @@ import com.soulevans.proceduraldungeon.model.map.Wall;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Random;
 
 public class Room {
     public int offsetX;
@@ -58,6 +60,15 @@ public class Room {
         }
         for(MPoint wall : walls){
             MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, '#', shadowMap);
+        }
+    }
+
+    public void placeGray(HashMap<MPoint, Double> noiseSpace){
+        for(MPoint wall : walls){
+            if(!doors.contains(wall)) {
+                MPoint temp = new MPoint(wall.x + offsetX, wall.y + offsetY);
+                noiseSpace.replace(temp, Double.MAX_VALUE);
+            }
         }
     }
 
@@ -119,12 +130,42 @@ public class Room {
         this.offsetY = y;
     }
 
+    public void randomDoor(){
+        Random random = new Random();
+        ArrayList<MPoint> temp = new ArrayList<>(walls);
+        temp.removeAll(doors); // you cant delete corners this way
+        for(int i = 0; i < doors.size(); i++){
+            int index = walls.indexOf(doors.get(i));
+            int l = index-1;
+            int r = index+1;
+
+            if(l < 4)
+                l = walls.size()-1;
+            if(r >= walls.size())
+                r = 4;
+
+            MPoint left = walls.get(l);
+            MPoint right = walls.get(r);
+
+            temp.remove(left);
+            temp.remove(right);
+        }
+        int wallNum = temp.size() - 5; // first 4 is corner but you at least want to use the first wall so 5 piece is out
+        if(wallNum > 0) {
+            int doorNum = 4 + (random.nextInt(wallNum));
+            MPoint door = temp.get(doorNum);
+            doors.add(door);
+        }
+    }
+
     private void initWalls(){
+        // corners
         walls.add(new MPoint(0, 0));
         walls.add(new MPoint(width, 0));
         walls.add(new MPoint(width, height));
         walls.add(new MPoint(0, height));
 
+        // walls
         for (int i = 1; i < width; i++) {
             walls.add(new MPoint(i, 0));
         }

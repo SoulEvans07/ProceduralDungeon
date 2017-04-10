@@ -86,8 +86,11 @@ public class Game {
                 for (int x = 0; x < map.mapWidth; x++) {
                     MPoint tmp = new MPoint(x, y);
                     double gray = MapLoader.noiseSpace.get(tmp);
-                    gc.setStroke(Color.gray(gray, opacity));
-                    gc.setFill(Color.gray(gray, opacity));
+                    Color g = Color.BLACK;
+                    if(gray <= 1)
+                        g = Color.gray(0, gray);
+                    gc.setStroke(g);
+                    gc.setFill(g);
                     gc.fillRect(x * Game.TILESIZE, y * Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
                 }
             }
@@ -127,7 +130,7 @@ public class Game {
         Game.zoom(event.getCode().getName());
 
         if(event.getCode().getName().equals("R")) {
-            Logger.log("Reset");
+            Logger.log("[--------------Reset--------------]");
             init(width, height, canvas);
         }
 

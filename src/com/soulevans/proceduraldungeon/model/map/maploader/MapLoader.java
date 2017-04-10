@@ -94,8 +94,8 @@ public class MapLoader {
 //        room.addChest(3, 3);
 //        room.setOffset(3, 7);
 //        room.placeRoom(stringMap);
-        generateRooms(width, height, stringMap);
         fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
+        generateRooms(width, height, stringMap);
 
         replaceTile(1, 1, 'p', stringMap);
         return parseMap(stringMap, player);
@@ -104,13 +104,14 @@ public class MapLoader {
     private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap) {
         ArrayList<Room> rooms = new ArrayList<>();
         ArrayList<String> shadowMap = new ArrayList<>(stringMap);
-        int roomCount = 30;
+        int roomCount = 50;
         int minWidth = 3;
         int minHeight = 3;
         int widthRange = 5;
         int heightRange = 5;
         int minRoomDist = 1;
         int roomDistRange = 2;
+        int maxDoorCount = 4;
         int centerX = (int) (mapWidth / 2.0);
         int centerY = (int) (mapHeight / 2.0);
         MPoint center = new MPoint(centerX, centerY);
@@ -194,7 +195,14 @@ public class MapLoader {
         }
 
         for (Room r : rooms) {
+
+            int n = random.nextInt(maxDoorCount -1);
+            for(int i = 0; i < n+1; i++){
+                r.randomDoor();
+            }
+
             r.placeRoom(stringMap);
+            r.placeGray(noiseSpace);
         }
     }
 
