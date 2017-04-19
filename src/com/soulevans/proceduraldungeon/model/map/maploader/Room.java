@@ -1,5 +1,6 @@
 package com.soulevans.proceduraldungeon.model.map.maploader;
 
+import com.soulevans.proceduraldungeon.Game;
 import com.soulevans.proceduraldungeon.logger.LogType;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
@@ -38,6 +39,11 @@ public class Room {
     }
 
     public void placeRoom(ArrayList<String> stringMap){
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, '_', stringMap);
+            }
+        }
         for(MPoint wall : walls){
             MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, '#', stringMap);
         }
@@ -134,6 +140,14 @@ public class Room {
         Random random = new Random();
         ArrayList<MPoint> temp = new ArrayList<>(walls);
         temp.removeAll(doors); // you cant delete corners this way
+        // remove walls but not corners on the edge of the map
+        for(int i = 4; i < walls.size(); i++){
+            MPoint wall = walls.get(i);
+            if(wall.x+offsetX == 0 || wall.y+offsetY == 0 || wall.x+offsetX == MapLoader.width-1 || wall.y+offsetY == MapLoader.height-1){
+                temp.remove(wall);
+            }
+        }
+        // remove doors and it's neighbours
         for(int i = 0; i < doors.size(); i++){
             int index = walls.indexOf(doors.get(i));
             int l = index-1;
@@ -150,7 +164,9 @@ public class Room {
             temp.remove(left);
             temp.remove(right);
         }
-        int wallNum = temp.size() - 5; // first 4 is corner but you at least want to use the first wall so 5 piece is out
+        // get the remaining places and choose one random
+        // first 4 is corner but you at least want to use the first wall so 5 piece is out
+        int wallNum = temp.size() - 5;
         if(wallNum > 0) {
             int doorNum = 4 + (random.nextInt(wallNum));
             MPoint door = temp.get(doorNum);
@@ -183,6 +199,6 @@ public class Room {
 
     @Override
     public String toString(){
-        return "[["+ offsetX +", "+ offsetY +"]:["+(offsetX +width)+", "+(offsetY +height)+"]]";
+        return "[ p1: ["+ offsetX +", "+ offsetY +"] - p2: ["+(offsetX +width)+", "+(offsetY +height)+"] - size: ["+width+", "+height+"]]";
     }
 }

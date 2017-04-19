@@ -24,6 +24,20 @@ public class MPoint {
         return Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
     }
 
+    public MPoint add(MPoint point){
+        MPoint temp = new MPoint(this);
+        temp.x += point.x;
+        temp.y += point.y;
+        return temp;
+    }
+
+    public MPoint mult(int val){
+        MPoint temp = new MPoint(this);
+        temp.x *= val;
+        temp.y *= val;
+        return temp;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj == this) return true;

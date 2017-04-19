@@ -1,9 +1,9 @@
 package com.soulevans.proceduraldungeon.model.map.maploader;
 
 import com.soulevans.proceduraldungeon.Game;
-import com.soulevans.proceduraldungeon.Main;
 import com.soulevans.proceduraldungeon.logger.LogType;
 import com.soulevans.proceduraldungeon.logger.Logger;
+import com.soulevans.proceduraldungeon.model.base.Dir;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.PerlinNoise;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
@@ -12,7 +12,6 @@ import com.soulevans.proceduraldungeon.model.entities.living.Enemy;
 import com.soulevans.proceduraldungeon.model.entities.living.Player;
 import com.soulevans.proceduraldungeon.model.map.*;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +24,8 @@ public class MapLoader {
     private static PerlinNoise noise = new PerlinNoise();
     private static float xo, yo, zo;
     public static HashMap<MPoint, Double> noiseSpace = new HashMap<>();
+    public static int width = 49;
+    public static int height = 49;
 
     private static final String[] levels = {"level_one.map", "level_two.map"};
 
@@ -74,41 +75,108 @@ public class MapLoader {
     public static DungeonMap loadRandom(int lvl, Player player) {
         DungeonMap dungeon = null;
         ArrayList<String> stringMap = new ArrayList<>();
-        int width = 50;
-        int height = 50;
 
-        resetNoise(width * Game.TILESIZE, height * Game.TILESIZE);
-
+//        resetNoise(width * Game.TILESIZE, height * Game.TILESIZE);
         for (int y = 0; y < height; y++) {
             String line = "";
             for (int x = 0; x < width; x++) {
-                line += "_";
+                line += "#";
             }
             stringMap.add(line);
         }
-//        Room room = new Room(10, 10);
-//        room.addDoor(9, 10);
-//        room.addDoor(10, 5);
-//        room.addEnemy(5, 5);
-//        room.addEnemy(4, 3);
-//        room.addChest(3, 3);
-//        room.setOffset(3, 7);
-//        room.placeRoom(stringMap);
-        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
+
+//        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
         generateRooms(width, height, stringMap);
+        for (int y = 1; y < height; y += 2) {
+            for (int x = 1; x < width; x += 2) {
+                MPoint pos = new MPoint(x, y);
+                if (getTile(pos.x, pos.y, stringMap) != '#') continue;
+                generateMaze(pos, stringMap);
+            }
+        }
 
         replaceTile(1, 1, 'p', stringMap);
         return parseMap(stringMap, player);
     }
 
+    private static void generateMaze(MPoint start, ArrayList<String> stringMap){
+        char EMPTY = '.';
+        int windinessPercent = 70;
+
+        Random random = new Random();
+        ArrayList<MPoint> cells = new ArrayList<>();
+        Dir lastDir = null;
+
+        replaceTile(start.x, start.y, EMPTY, stringMap);
+        cells.add(start);
+
+        while(!cells.isEmpty()){
+            MPoint cell = cells.get(cells.size()-1);    // cells.last
+            ArrayList<Dir> dirs = new ArrayList<>();
+
+            for(Dir dir : Dir.values()){
+                if(shouldCarve(cell, dir, stringMap))
+                    dirs.add(dir);
+            }
+
+            if(dirs.size() > 0){
+                Dir dir;
+                if(dirs.contains(lastDir) && random.nextInt(100) > windinessPercent)
+                    dir = lastDir;
+                else
+                    dir = dirs.get(random.nextInt(dirs.size()));
+
+                MPoint one = cell.add(dir.value);
+                MPoint oneplus = cell.add(dir.mult(2));
+                replaceTile(one.x, one.y, EMPTY, stringMap);
+                replaceTile(oneplus.x, oneplus.y, EMPTY, stringMap);
+
+                cells.add(oneplus);
+                lastDir = dir;
+            } else {
+                cells.remove(cells.size() - 1 );    // cells.removeLast
+                lastDir = null;
+            }
+        }
+
+    }
+
+    private static boolean shouldCarve(MPoint pos, Dir dir, ArrayList<String> stringMap){
+        MPoint one = pos.add(dir.value);
+        MPoint next = pos.add(dir.mult(2));
+        MPoint over = pos.add(dir.mult(3));
+
+        return getTile(over.x, over.y, stringMap) != '?' && getTile(next.x, next.y, stringMap) == '#'
+                && getTile(one.x, one.y, stringMap) == '#';
+    }
+
+    public static char getTile(int x, int y, ArrayList<String> stringMap){
+        if(y >= stringMap.size() || y < 0)
+            return '?';
+
+        String line = stringMap.get(y);
+        if(x >= line.length() || x < 0)
+            return '?';
+
+        return line.charAt(x);
+    }
+
     private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap) {
         ArrayList<Room> rooms = new ArrayList<>();
-        ArrayList<String> shadowMap = new ArrayList<>(stringMap);
-        int roomCount = 50;
+        ArrayList<String> shadowMap = new ArrayList<>();
+        for (int y = 0; y < height; y++) {
+            String line = "";
+            for (int x = 0; x < width; x++) {
+                line += "_";
+            }
+            shadowMap.add(line);
+        }
+
+        int roomAttempt = 50;
         int minWidth = 3;
         int minHeight = 3;
-        int widthRange = 5;
-        int heightRange = 5;
+        int widthRange = 10;
+        int heightRange = 10;
         int minRoomDist = 1;
         int roomDistRange = 2;
         int maxDoorCount = 4;
@@ -119,10 +187,16 @@ public class MapLoader {
         Random random = new Random();
 
         int w = minWidth + random.nextInt(widthRange);
+        w = w % 2 == 1 ? w+1 : w;
         int h = minHeight + random.nextInt(heightRange);
+        h = h % 2 == 1 ? h+1 : h;
         int dist = minRoomDist + random.nextInt(roomDistRange);
         Room room = new Room(w, h);
-        room.setOffset(centerX - (w / 2), centerY - (h / 2));
+        int offX = centerX - (w / 2);
+        int offY = centerY - (h / 2);
+        if(offX % 2 == 1) offX--;
+        if(offY % 2 == 1) offY--;
+        room.setOffset(offX, offY);
 
         room.placeShadow(dist, shadowMap);
         if (LOG_GEN) {
@@ -132,14 +206,18 @@ public class MapLoader {
 
         rooms.add(room);
 
-        for (int i = 0; i < roomCount - 1; i++) {
+        for (int i = 0; i < roomAttempt - 1; i++) {
             w = minWidth + random.nextInt(widthRange);
+            w = w % 2 == 1 ? w+1 : w;
             h = minHeight + random.nextInt(heightRange);
+            h = h % 2 == 1 ? h+1 : h;
             dist = minRoomDist + random.nextInt(roomDistRange);
             room = new Room(w, h);
 
             // drop around the edge
-            ArrayList<MPoint> drops = rotate(getDrop(mapWidth - w - 1, mapHeight - h - 1), i * ((2 * w + 2 * h)));
+            int shift = i * ((2 * w + 2 * h));
+            shift = shift % 2 == 0 ? shift+1 : shift;
+            ArrayList<MPoint> drops = rotate(getDrop(mapWidth - w - 1, mapHeight - h - 1), shift);
             for (MPoint drop : drops) {
                 if (LOG_GEN) {
                     Logger.log("drop start: " + drop + " room: [" + w + ", " + h + "]");
@@ -163,9 +241,14 @@ public class MapLoader {
                     }
 
                     off.x += (center.x - off.x) / d;
-                    off.y += (center.y - off.y) / d;
+                    off.x = (int) Math.round(off.x);
+                    off.x = off.x % 2 == 1 ? (off.x + (off.x < center.x ? 1 : -1)) : off.x;
 
-                    room.setOffset((int) Math.floor(off.x), (int) Math.floor(off.y));
+                    off.y += (center.y - off.y) / d;
+                    off.y = (int) Math.round(off.y);
+                    off.y = off.y % 2 == 1 ? (off.y + (off.y < center.y ? 1 : -1)) : off.y;
+
+                    room.setOffset((int) off.x, (int) off.y);
                     if (STEP_BY_STEP_GEN & LOG_GEN) {
                         room.placeShadow(dist, testMap);
                         printMap(testMap);
@@ -195,15 +278,21 @@ public class MapLoader {
         }
 
         for (Room r : rooms) {
-
-            int n = random.nextInt(maxDoorCount -1);
-            for(int i = 0; i < n+1; i++){
-                r.randomDoor();
-            }
-
             r.placeRoom(stringMap);
             r.placeGray(noiseSpace);
         }
+    }
+
+    private static int getDoorNum(int max){
+        int doors = 1;
+        Random random = new Random();
+        for(int i = 1; i < max; i++){
+            int r = random.nextInt(100);
+            if((100-r) > 25){
+                doors++;
+            }
+        }
+        return doors;
     }
 
     public static void offsetNoise(float x, float y, float z) {
@@ -223,27 +312,24 @@ public class MapLoader {
         }
     }
 
-
     private static ArrayList<MPoint> getDrop(int width, int height) {
         ArrayList<MPoint> drop = new ArrayList<>();
 
-        drop.add(new MPoint(0, 0));
-        for (int i = 1; i < width; i++) {
+        int i;
+        for (i = 0; i < width; i+=2) {
             drop.add(new MPoint(i, 0));
         }
 
-        drop.add(new MPoint(width, 0));
-        for (int j = 1; j < height; j++) {
-            drop.add(new MPoint(width, j));
+        int j;
+        for (j = 2; j < height; j+=2) {
+            drop.add(new MPoint(i, j));
         }
 
-        drop.add(new MPoint(width, height));
-        for (int i = width - 1; i > 0; i--) {
-            drop.add(new MPoint(i, height));
+        for (i = i - 2; i > 0; i-=2) {
+            drop.add(new MPoint(i, j));
         }
 
-        drop.add(new MPoint(0, height));
-        for (int j = height - 1; j > 0; j--) {
+        for (j = j - 2; j > 0; j-=2) {
             drop.add(new MPoint(0, j));
         }
 
