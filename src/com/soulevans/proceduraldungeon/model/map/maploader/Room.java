@@ -128,12 +128,26 @@ public class Room {
             Logger.log(LogType.ERROR, "Cannot place ENEMY, " + chest + " in room " + this);
     }
 
-    public void addDoor(int x, int y){
+    public void addRelativeDoor(int x, int y){
         MPoint door = new MPoint(x, y);
         if(walls.contains(door))
             doors.add(door);
-        else
+        else {
             Logger.log(LogType.ERROR, "Cannot place DOOR on " + door + " in room " + this);
+            Logger.log(LogType.ERROR, "\tcorners: " + Arrays.toString(corners.toArray()));
+            Logger.log(LogType.ERROR, "\twalls:   " + Arrays.toString(walls.toArray()));
+        }
+    }
+
+    public boolean containsAbsoluteWall(MPoint cell){
+        for(MPoint wall : walls){
+            MPoint absWall = new MPoint(wall.x + offsetX, wall.y + offsetY);
+//            System.out.println("from: " + wall + " to: " + absWall + " check for: " + cell);
+            if(absWall.equals(cell)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setOffset(int x, int y){

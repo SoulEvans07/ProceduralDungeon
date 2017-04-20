@@ -38,7 +38,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Procedural Dungeon");
         Group root = new Group();
 
         canvas = new Canvas(width, height);

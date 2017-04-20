@@ -86,20 +86,54 @@ public class MapLoader {
         }
 
 //        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
-        generateRooms(width, height, stringMap);
+        ArrayList<Room> rooms = generateRooms(width, height, stringMap);
+
+        ArrayList<ArrayList<MPoint>> mazes = new ArrayList<>();
         for (int y = 1; y < height; y += 2) {
             for (int x = 1; x < width; x += 2) {
                 MPoint pos = new MPoint(x, y);
                 if (getTile(pos.x, pos.y, stringMap) != '#') continue;
-                generateMaze(pos, stringMap);
+                mazes.add(generateMaze(pos, stringMap));
             }
         }
+
+        generateDoors(mazes, rooms, stringMap);
 
         replaceTile(1, 1, 'p', stringMap);
         return parseMap(stringMap, player);
     }
 
-    private static void generateMaze(MPoint start, ArrayList<String> stringMap){
+    private static void generateDoors(ArrayList<ArrayList<MPoint>> mazes, ArrayList<Room> rooms, ArrayList<String> stringMap){
+        for(ArrayList<MPoint> maze : mazes){
+            for(MPoint cell : maze){
+                ArrayList<Dir> dirs = new ArrayList<>();
+
+                for(Dir dir : Dir.values()){
+                    MPoint one = cell.add(dir.value);
+                    Room room = isRoomWall(one, rooms);
+
+                    if(room != null) {
+                        room.addRelativeDoor(one.x - room.offsetX, one.y - room.offsetY);
+                    }
+                }
+            }
+        }
+
+        for (Room r : rooms) {
+            r.placeRoom(stringMap);
+        }
+    }
+
+    private static Room isRoomWall(MPoint cell, ArrayList<Room> rooms){
+        for(Room r : rooms){
+            if(r.containsAbsoluteWall(cell)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    private static ArrayList<MPoint> generateMaze(MPoint start, ArrayList<String> stringMap){
         ArrayList<MPoint> maze = new ArrayList<>();
         char EMPTY = '.';
         int windinessPercent = 70;
@@ -144,6 +178,7 @@ public class MapLoader {
             }
         }
 
+        return maze;
     }
 
     private static boolean shouldCarve(MPoint pos, Dir dir, ArrayList<String> stringMap){
@@ -166,7 +201,7 @@ public class MapLoader {
         return line.charAt(x);
     }
 
-    private static void generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap) {
+    private static ArrayList<Room> generateRooms(int mapWidth, int mapHeight, ArrayList<String> stringMap) {
         ArrayList<Room> rooms = new ArrayList<>();
         ArrayList<String> shadowMap = new ArrayList<>();
         for (int y = 0; y < height; y++) {
@@ -286,6 +321,7 @@ public class MapLoader {
             r.placeRoom(stringMap);
             r.placeGray(noiseSpace);
         }
+        return rooms;
     }
 
     private static int getDoorNum(int max){
