@@ -100,6 +100,7 @@ public class MapLoader {
     }
 
     private static void generateMaze(MPoint start, ArrayList<String> stringMap){
+        ArrayList<MPoint> maze = new ArrayList<>();
         char EMPTY = '.';
         int windinessPercent = 70;
 
@@ -109,6 +110,7 @@ public class MapLoader {
 
         replaceTile(start.x, start.y, EMPTY, stringMap);
         cells.add(start);
+        maze.add(start);
 
         while(!cells.isEmpty()){
             MPoint cell = cells.get(cells.size()-1);    // cells.last
@@ -130,6 +132,9 @@ public class MapLoader {
                 MPoint oneplus = cell.add(dir.mult(2));
                 replaceTile(one.x, one.y, EMPTY, stringMap);
                 replaceTile(oneplus.x, oneplus.y, EMPTY, stringMap);
+
+                maze.add(one);
+                maze.add(oneplus);
 
                 cells.add(oneplus);
                 lastDir = dir;

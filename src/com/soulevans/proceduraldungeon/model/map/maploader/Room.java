@@ -16,6 +16,7 @@ public class Room {
     public int offsetY;
     private int width;
     private int height;
+    public ArrayList<MPoint> corners;
     public ArrayList<MPoint> walls;
     private ArrayList<MPoint> doors;
     private ArrayList<MPoint> enemies;
@@ -26,6 +27,7 @@ public class Room {
     }
 
     public Room(int x, int y, int w, int h){
+        corners = new ArrayList<>();
         walls = new ArrayList<>();
         doors = new ArrayList<>();
         enemies = new ArrayList<>();
@@ -43,6 +45,9 @@ public class Room {
             for(int x = 0; x < width; x++){
                 MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, '_', stringMap);
             }
+        }
+        for(MPoint corner : corners){
+            MapLoader.replaceTile(this.offsetX + corner.x, this.offsetY + corner.y, '#', stringMap);
         }
         for(MPoint wall : walls){
             MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, '#', stringMap);
@@ -176,10 +181,10 @@ public class Room {
 
     private void initWalls(){
         // corners
-        walls.add(new MPoint(0, 0));
-        walls.add(new MPoint(width, 0));
-        walls.add(new MPoint(width, height));
-        walls.add(new MPoint(0, height));
+        corners.add(new MPoint(0, 0));
+        corners.add(new MPoint(width, 0));
+        corners.add(new MPoint(width, height));
+        corners.add(new MPoint(0, height));
 
         // walls
         for (int i = 1; i < width; i++) {
