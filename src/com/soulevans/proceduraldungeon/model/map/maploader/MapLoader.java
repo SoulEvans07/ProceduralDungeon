@@ -16,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MapLoader {
@@ -104,6 +105,7 @@ public class MapLoader {
     }
 
     private static void generateDoors(ArrayList<ArrayList<MPoint>> mazes, ArrayList<Room> rooms, ArrayList<String> stringMap){
+        ArrayList<MPoint> connectors = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
             for(MPoint cell : maze){
                 ArrayList<Dir> dirs = new ArrayList<>();
@@ -113,15 +115,42 @@ public class MapLoader {
                     Room room = isRoomWall(one, rooms);
 
                     if(room != null) {
-                        room.addRelativeDoor(one.x - room.offsetX, one.y - room.offsetY);
+                        connectors.add(one);
+//                        room.addRelativeDoor(one.x - room.offsetX, one.y - room.offsetY);
                     }
                 }
             }
         }
 
-        for (Room r : rooms) {
-            r.placeRoom(stringMap);
+//        Room room = rooms.get(random.nextInt(rooms.size()));
+//        ArrayList<MPoint> conn = roomConnectors(connectors, room);
+//        MPoint open;
+
+        Random random = new Random();
+        for(Room room : rooms){
+            ArrayList<MPoint> conn = roomConnectors(connectors, room);
+            MPoint open = conn.get(random.nextInt(conn.size()));
+            connectors.remove(open);
+            conn.remove(open);
+            room.addRelativeDoor(open.x - room.offsetX, open.y - room.offsetY);
+            connectors.removeAll(conn);
         }
+
+        for (Room room : rooms) {
+            room.placeRoom(stringMap);
+        }
+    }
+
+    private static ArrayList<MPoint> roomConnectors(ArrayList<MPoint> connectors, Room room){
+        ArrayList<MPoint> subList = new ArrayList<>();
+        MPoint offset = new MPoint(room.offsetX, room.offsetY);
+        for(MPoint wall : room.walls){
+            MPoint tmp = wall.add(offset);
+            if (connectors.contains(tmp))
+                subList.add(tmp);
+        }
+
+        return subList;
     }
 
     private static Room isRoomWall(MPoint cell, ArrayList<Room> rooms){
@@ -215,8 +244,8 @@ public class MapLoader {
         int roomAttempt = 50;
         int minWidth = 3;
         int minHeight = 3;
-        int widthRange = 10;
-        int heightRange = 10;
+        int widthRange = 5;
+        int heightRange = 5;
         int minRoomDist = 1;
         int roomDistRange = 2;
         int maxDoorCount = 4;
