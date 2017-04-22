@@ -99,9 +99,46 @@ public class MapLoader {
         }
 
         generateDoors(mazes, rooms, stringMap);
+        fillDeadEnds(mazes, stringMap);
 
         replaceTile(1, 1, 'p', stringMap);
         return parseMap(stringMap, player);
+    }
+
+    private static void fillDeadEnds(ArrayList<ArrayList<MPoint>> mazes, ArrayList<String> stringMap){
+        int FILL_DEADENDS = 200;
+        Random random = new Random();
+        ArrayList<MPoint> mazeCells = new ArrayList<>();
+        for(ArrayList<MPoint> maze : mazes){
+            mazeCells.addAll(maze);
+        }
+
+        ArrayList<MPoint> deadEnds = new ArrayList<>();
+        for(int i = 0; i < FILL_DEADENDS; i++) {
+            deadEnds.clear();
+            for (MPoint cell : mazeCells) {
+                int wallCount = 0;
+                for (Dir dir : Dir.values()) {
+                    MPoint neighbour = cell.add(dir.value);
+                    if (stringMap.get(neighbour.y).charAt(neighbour.x) == '#')
+                        wallCount++;
+                }
+
+                if (wallCount >= 3) {
+                    deadEnds.add(cell);
+                }
+            }
+
+            if(deadEnds.size() > 0) {
+                MPoint chosen = deadEnds.get(random.nextInt(deadEnds.size()));
+                replaceTile(chosen.x, chosen.y, '#', stringMap);
+                mazeCells.remove(chosen); // TODO: remove from containing maze as well
+                deadEnds.remove(chosen);
+            }
+        }
+        for(MPoint ch : deadEnds){
+            replaceTile(ch.x, ch.y, 'c', stringMap);
+        }
     }
 
     private static void generateDoors(ArrayList<ArrayList<MPoint>> mazes, ArrayList<Room> rooms, ArrayList<String> stringMap){
