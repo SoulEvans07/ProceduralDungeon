@@ -142,6 +142,7 @@ public class MapLoader {
     }
 
     private static void generateDoors(ArrayList<ArrayList<MPoint>> mazes, ArrayList<Room> rooms, ArrayList<String> stringMap){
+        int maxDoorCount = 3;
         ArrayList<MPoint> connectors = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
             for(MPoint cell : maze){
@@ -170,6 +171,34 @@ public class MapLoader {
             connectors.remove(open);
             conn.remove(open);
             room.addRelativeDoor(open.x - room.offsetX, open.y - room.offsetY);
+            if(conn.size() > 0) {
+                for (int i = 1; i < maxDoorCount; i++) {
+                    if (random.nextInt(100) < 20) {
+                        int id = random.nextInt(conn.size());
+                        MPoint other = conn.get(id);
+                        MPoint rem = null;
+                        if (id - 1 < 0) {
+                            rem = conn.remove(conn.size() - 1);
+                        } else {
+                            rem = conn.remove(id - 1);
+                        }
+                        connectors.remove(rem);
+
+                        if(conn.size() > 0) {
+                            if (id + 1 >= conn.size()) {
+                                rem = conn.remove(0);
+                            } else {
+                                rem = conn.remove(id + 1);
+                            }
+                            connectors.remove(rem);
+                        }
+
+                        connectors.remove(other);
+                        conn.remove(other);
+                        room.addRelativeDoor(other.x - room.offsetX, other.y - room.offsetY);
+                    }
+                }
+            }
             connectors.removeAll(conn);
         }
 
@@ -285,7 +314,6 @@ public class MapLoader {
         int heightRange = 5;
         int minRoomDist = 1;
         int roomDistRange = 2;
-        int maxDoorCount = 4;
         int centerX = (int) (mapWidth / 2.0);
         int centerY = (int) (mapHeight / 2.0);
         MPoint center = new MPoint(centerX, centerY);
