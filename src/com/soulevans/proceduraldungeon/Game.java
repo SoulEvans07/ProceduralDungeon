@@ -77,7 +77,7 @@ public class Game {
         gc.getCanvas().setScaleY(scale);
         map.drawMap(gc);
 
-        //drawNoise(gc, 0.5);
+//        drawNoise(gc, 0.5);
     }
 
     public void drawNoise(GraphicsContext gc, double opacity){
