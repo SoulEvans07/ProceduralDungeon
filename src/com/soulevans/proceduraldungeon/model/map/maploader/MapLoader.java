@@ -127,7 +127,7 @@ public class MapLoader {
     }
 
     private static void fillDeadEnds(ArrayList<ArrayList<MPoint>> mazes, ArrayList<String> stringMap){
-        int FILL_DEADENDS = 200;
+        int FILL_DEADENDS = 20;
         Random random = new Random();
         ArrayList<MPoint> mazeCells = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
