@@ -21,6 +21,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Game {
     private double width, height;
@@ -143,6 +146,10 @@ public class Game {
         if(event.getCode().getName().equals("R")) {
             Logger.log("[--------------Reset--------------]");
             init(width, height, canvas);
+//            this.savePNG();
+        }
+
+        if(event.getCode().getName().equals("P")) {
             this.savePNG();
         }
 
@@ -152,17 +159,22 @@ public class Game {
         }
     }
 
-    private static int num = 0;
     public void savePNG(){
-        File file = new File("printscreen\\save_"+num+".png");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HHmmss");
+        Date date = new Date();
+
+        File file = new File("printscreen\\"+dateFormat.format(date)+".png");
+        Logger.log("Printscreen: " + file.getName())
+        ;
         WritableImage writableImage = new WritableImage((int) width, (int) height);
         canvas.snapshot(null, writableImage);
         RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
         try {
             ImageIO.write(renderedImage, "png", file);
-            num++;
+            Logger.log("Printscreen: " + file.getName());
         } catch (IOException e) {
             e.printStackTrace();
+            Logger.log("Printscreen failed!");
         }
     }
 
