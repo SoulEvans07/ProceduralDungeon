@@ -14,8 +14,8 @@ import java.util.Random;
 public class Room {
     public int offsetX;
     public int offsetY;
-    private int width;
-    private int height;
+    public int width;
+    public int height;
     public ArrayList<MPoint> corners;
     public ArrayList<MPoint> walls;
     private ArrayList<MPoint> doors;

@@ -25,8 +25,8 @@ public class MapLoader {
     private static PerlinNoise noise = new PerlinNoise();
     private static float xo, yo, zo;
     public static HashMap<MPoint, Double> noiseSpace = new HashMap<>();
-    public static int width = 49;
-    public static int height = 49;
+    public static int width = 37;
+    public static int height = 37;
 
     private static final String[] levels = {"level_one.map", "level_two.map"};
 
@@ -88,7 +88,6 @@ public class MapLoader {
 
 //        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
         ArrayList<Room> rooms = generateRooms(width, height, stringMap);
-
         ArrayList<ArrayList<MPoint>> mazes = new ArrayList<>();
         for (int y = 1; y < height; y += 2) {
             for (int x = 1; x < width; x += 2) {
@@ -97,12 +96,34 @@ public class MapLoader {
                 mazes.add(generateMaze(pos, stringMap));
             }
         }
-
         generateDoors(mazes, rooms, stringMap);
         fillDeadEnds(mazes, stringMap);
+        generateStaircase(rooms, stringMap);
 
-        replaceTile(1, 1, 'p', stringMap);
+        //replaceTile(1, 1, 'p', stringMap);
+        //printMap(stringMap);
         return parseMap(stringMap, player);
+    }
+
+    private static void generateStaircase(ArrayList<Room> rooms, ArrayList<String> stringMap){
+        ArrayList<Room> tmpRoomList = new ArrayList<>(rooms);
+        Random random = new Random();
+
+        // get entry & exit room
+        int entryRoomNum = random.nextInt(tmpRoomList.size());
+        Room entryRoom = tmpRoomList.remove(entryRoomNum);
+        int exitRoomNum = random.nextInt(tmpRoomList.size());
+        Room exitRoom = tmpRoomList.remove(exitRoomNum);
+
+        // place staircase in room
+        int x = entryRoom.offsetX + (int) Math.floor(entryRoom.width / 2.0);
+        int y = entryRoom.offsetY + (int) Math.floor(entryRoom.height / 2.0);
+        replaceTile(x, y, 's', stringMap);
+        replaceTile(x + 1, y, 'p', stringMap);
+
+        x = exitRoom.offsetX + (int) Math.floor(exitRoom.width / 2.0);
+        y = exitRoom.offsetY + (int) Math.floor(exitRoom.height / 2.0);
+        replaceTile(x, y, 'x', stringMap);
     }
 
     private static void fillDeadEnds(ArrayList<ArrayList<MPoint>> mazes, ArrayList<String> stringMap){
@@ -533,6 +554,12 @@ public class MapLoader {
                         break;
                     case 'c':
                         tmp = new Chest(x, y, new Sword("Master Sword", 10000));
+                        break;
+                    case 's':
+                        tmp = new EntryStair(x, y);
+                        break;
+                    case 'x':
+                        tmp = new ExitStair(x, y);
                         break;
                     default:
                         tmp = new Floor(x, y);

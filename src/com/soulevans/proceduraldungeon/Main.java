@@ -33,8 +33,8 @@ public class Main extends Application {
         }
     }));
 
-    private double width = 800;
-    private double height = 800;
+    private double width = 600;
+    private double height = 600;
 
     @Override
     public void start(Stage primaryStage) throws Exception{

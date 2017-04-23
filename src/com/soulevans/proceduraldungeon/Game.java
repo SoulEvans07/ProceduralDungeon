@@ -69,6 +69,10 @@ public class Game {
         return map;
     }
 
+    public void nextLevel(){
+        init(width, height, canvas);
+    }
+
 
 //    View    ##########################################################################################################
 

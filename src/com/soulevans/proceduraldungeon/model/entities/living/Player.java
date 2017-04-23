@@ -5,10 +5,7 @@ import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.entities.GameObject;
 import com.soulevans.proceduraldungeon.model.entities.items.ItemEntity;
 import com.soulevans.proceduraldungeon.model.entities.items.Sword;
-import com.soulevans.proceduraldungeon.model.map.Chest;
-import com.soulevans.proceduraldungeon.model.map.Door;
-import com.soulevans.proceduraldungeon.model.map.Floor;
-import com.soulevans.proceduraldungeon.model.map.Tile;
+import com.soulevans.proceduraldungeon.model.map.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -55,7 +52,12 @@ public class Player extends Living {
                 if(go)
                     this.step(tile);
             }
-            if( tile instanceof Floor)
+            if(tile instanceof ExitStair){
+                this.step(tile);
+                Game.getInstance().nextLevel();
+            }
+
+            if(tile instanceof Floor)
                 this.step(tile);
         } else {
 //            Logger.log(entity.toString());
