@@ -8,12 +8,19 @@ import com.soulevans.proceduraldungeon.model.entities.living.Living;
 import com.soulevans.proceduraldungeon.model.entities.living.Player;
 import com.soulevans.proceduraldungeon.model.map.DungeonMap;
 import com.soulevans.proceduraldungeon.model.map.maploader.MapLoader;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Game {
     private double width, height;
@@ -136,11 +143,26 @@ public class Game {
         if(event.getCode().getName().equals("R")) {
             Logger.log("[--------------Reset--------------]");
             init(width, height, canvas);
+            this.savePNG();
         }
 
         if(event.getCode().getName().equals("I")){
             Logger.log("[Inventory]");
             player.listInventory();
+        }
+    }
+
+    private static int num = 0;
+    public void savePNG(){
+        File file = new File("printscreen\\save_"+num+".png");
+        WritableImage writableImage = new WritableImage((int) width, (int) height);
+        canvas.snapshot(null, writableImage);
+        RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+        try {
+            ImageIO.write(renderedImage, "png", file);
+            num++;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
