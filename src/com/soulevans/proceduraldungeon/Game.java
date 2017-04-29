@@ -138,7 +138,6 @@ public class Game {
 
 //    Control    #######################################################################################################
 
-
     public void onKeyPressed(KeyEvent event){
 //        Logger.log(LogType.EVENT, "keyPressed: " + event.getCode().getName());
         Game.zoom(event.getCode().getName());
@@ -157,6 +156,9 @@ public class Game {
             Logger.log("[Inventory]");
             player.listInventory();
         }
+
+        player.onKeyReleased(event);
+        map.removeDead();
     }
 
     public void savePNG(){
@@ -180,8 +182,8 @@ public class Game {
 
     public void onKeyReleased(KeyEvent event){
 //        Logger.log(LogType.EVENT, "keyReleased: " + event.getCode().getName());
-        player.onKeyReleased(event);
-        map.removeDead();
+//        player.onKeyReleased(event);
+//        map.removeDead();
     }
 
 

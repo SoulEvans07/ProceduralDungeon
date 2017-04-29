@@ -127,7 +127,7 @@ public class MapLoader {
     }
 
     private static void fillDeadEnds(ArrayList<ArrayList<MPoint>> mazes, ArrayList<String> stringMap){
-        int FILL_DEADENDS = 20;
+        int FILL_DEADENDS = width*2;
         Random random = new Random();
         ArrayList<MPoint> mazeCells = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
@@ -141,8 +141,9 @@ public class MapLoader {
                 int wallCount = 0;
                 for (Dir dir : Dir.values()) {
                     MPoint neighbour = cell.add(dir.value);
-                    if (stringMap.get(neighbour.y).charAt(neighbour.x) == '#')
-                        wallCount++;
+                    if(neighbour.y < stringMap.size() && neighbour.x < stringMap.get(neighbour.y).length())
+                        if (stringMap.get(neighbour.y).charAt(neighbour.x) == '#')
+                            wallCount++;
                 }
 
                 if (wallCount >= 3) {
@@ -328,7 +329,7 @@ public class MapLoader {
             shadowMap.add(line);
         }
 
-        int roomAttempt = 50;
+        int roomAttempt = width;
         int minWidth = 3;
         int minHeight = 3;
         int widthRange = 5;
