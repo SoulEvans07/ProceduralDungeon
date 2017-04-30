@@ -16,7 +16,6 @@ import javafx.scene.canvas.GraphicsContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class MapLoader {
@@ -102,15 +101,45 @@ public class MapLoader {
 
         //replaceTile(1, 1, 'p', stringMap);
 
+        ArrayList<MPoint> free = new ArrayList<>();
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
                 MPoint tmp = new MPoint(x, y);
-                if(stringMap.get(y).charAt(x) != '_')
+                if(stringMap.get(y).charAt(x) != '_') {
                     noiseSpace.replace(tmp, Double.MAX_VALUE);
+                } else {
+                    free.add(tmp);
+                }
             }
         }
+
+        placeEnemysAndChests(free, stringMap);
         //printMap(stringMap);
         return parseMap(stringMap, player);
+    }
+
+    private static void placeEnemysAndChests(ArrayList<MPoint> free, ArrayList<String> stringMap){
+        int ENEMY_COUNT = 10;
+        int CHEST_COUNT = 10;
+        Random random = new Random();
+
+        while(ENEMY_COUNT > 0){
+            int pos = random.nextInt(free.size());
+            MPoint e = free.get(pos);
+            double val = noiseSpace.get(e);
+            replaceTile(e.x, e.y, 'e', stringMap);
+            free.remove(pos);
+            ENEMY_COUNT--;
+        }
+
+        while(CHEST_COUNT > 0){
+            int pos = random.nextInt(free.size());
+            MPoint c = free.get(pos);
+            double val = noiseSpace.get(c);
+            replaceTile(c.x, c.y, 'c', stringMap);
+            free.remove(pos);
+            CHEST_COUNT--;
+        }
     }
 
     private static void generateStaircase(ArrayList<Room> rooms, ArrayList<String> stringMap){
@@ -136,6 +165,7 @@ public class MapLoader {
 
     private static void fillDeadEnds(ArrayList<ArrayList<MPoint>> mazes, ArrayList<String> stringMap){
         int FILL_DEADENDS = width*2;
+        double CHEST_CHANCE = 60;
         Random random = new Random();
         ArrayList<MPoint> mazeCells = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
@@ -167,7 +197,8 @@ public class MapLoader {
             }
         }
         for(MPoint ch : deadEnds){
-            replaceTile(ch.x, ch.y, 'c', stringMap);
+            if(random.nextInt(100) < CHEST_CHANCE)
+                replaceTile(ch.x, ch.y, 'c', stringMap);
         }
     }
 
