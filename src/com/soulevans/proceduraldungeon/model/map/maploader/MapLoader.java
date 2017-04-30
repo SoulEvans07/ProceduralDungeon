@@ -204,6 +204,7 @@ public class MapLoader {
 
     private static void generateDoors(ArrayList<ArrayList<MPoint>> mazes, ArrayList<Room> rooms, ArrayList<String> stringMap){
         int maxDoorCount = 3;
+        int DOOR_CHANCE = 20;
         ArrayList<MPoint> connectors = new ArrayList<>();
         for(ArrayList<MPoint> maze : mazes){
             for(MPoint cell : maze){
@@ -237,7 +238,7 @@ public class MapLoader {
             room.addRelativeDoor(open.x - room.offsetX, open.y - room.offsetY);
             if(conn.size() > 0) {
                 for (int i = 1; i < maxDoorCount; i++) {
-                    if (random.nextInt(100) < 20) {
+                    if (random.nextInt(100) < DOOR_CHANCE) {
                         int id = random.nextInt(conn.size());
                         MPoint other = conn.get(id);
                         removeNextDoors(id, conn, connectors);
