@@ -228,7 +228,10 @@ public class MapLoader {
         Random random = new Random();
         for(Room room : rooms){
             ArrayList<MPoint> conn = roomConnectors(connectors, room);
-            MPoint open = conn.get(random.nextInt(conn.size()));
+            int index = random.nextInt(conn.size());
+            MPoint open = conn.get(index);
+            removeNextDoors(index, conn, connectors);
+
             connectors.remove(open);
             conn.remove(open);
             room.addRelativeDoor(open.x - room.offsetX, open.y - room.offsetY);
@@ -237,22 +240,7 @@ public class MapLoader {
                     if (random.nextInt(100) < 20) {
                         int id = random.nextInt(conn.size());
                         MPoint other = conn.get(id);
-                        MPoint rem = null;
-                        if (id - 1 < 0) {
-                            rem = conn.remove(conn.size() - 1);
-                        } else {
-                            rem = conn.remove(id - 1);
-                        }
-                        connectors.remove(rem);
-
-                        if(conn.size() > 0) {
-                            if (id + 1 >= conn.size()) {
-                                rem = conn.remove(0);
-                            } else {
-                                rem = conn.remove(id + 1);
-                            }
-                            connectors.remove(rem);
-                        }
+                        removeNextDoors(id, conn, connectors);
 
                         connectors.remove(other);
                         conn.remove(other);
@@ -265,6 +253,25 @@ public class MapLoader {
 
         for (Room room : rooms) {
             room.placeRoom(stringMap);
+        }
+    }
+
+    public static void removeNextDoors(int index, ArrayList<MPoint> conn, ArrayList<MPoint> connectors){
+        MPoint rem = null;
+        if (index - 1 < 0) {
+            rem = conn.remove(conn.size() - 1);
+        } else {
+            rem = conn.remove(index - 1);
+        }
+        connectors.remove(rem);
+
+        if(conn.size() > 0) {
+            if (index + 1 >= conn.size()) {
+                rem = conn.remove(0);
+            } else {
+                rem = conn.remove(index + 1);
+            }
+            connectors.remove(rem);
         }
     }
 
