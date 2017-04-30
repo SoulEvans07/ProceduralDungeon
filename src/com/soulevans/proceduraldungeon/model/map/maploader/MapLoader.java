@@ -77,7 +77,7 @@ public class MapLoader {
         DungeonMap dungeon = null;
         ArrayList<String> stringMap = new ArrayList<>();
 
-//        resetNoise(width * Game.TILESIZE, height * Game.TILESIZE);
+        resetNoise(width * Game.TILESIZE, height * Game.TILESIZE);
         for (int y = 0; y < height; y++) {
             String line = "";
             for (int x = 0; x < width; x++) {
@@ -86,7 +86,7 @@ public class MapLoader {
             stringMap.add(line);
         }
 
-//        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
+        fillNoiseSpace(width, height, Game.getInstance().canvas.getGraphicsContext2D());
         ArrayList<Room> rooms = generateRooms(width, height, stringMap);
         ArrayList<ArrayList<MPoint>> mazes = new ArrayList<>();
         for (int y = 1; y < height; y += 2) {
@@ -101,6 +101,14 @@ public class MapLoader {
         generateStaircase(rooms, stringMap);
 
         //replaceTile(1, 1, 'p', stringMap);
+
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                MPoint tmp = new MPoint(x, y);
+                if(stringMap.get(y).charAt(x) != '_')
+                    noiseSpace.replace(tmp, Double.MAX_VALUE);
+            }
+        }
         //printMap(stringMap);
         return parseMap(stringMap, player);
     }
@@ -252,7 +260,7 @@ public class MapLoader {
 
     private static ArrayList<MPoint> generateMaze(MPoint start, ArrayList<String> stringMap){
         ArrayList<MPoint> maze = new ArrayList<>();
-        char EMPTY = '.';
+        char EMPTY = '_';
         int windinessPercent = 70;
 
         Random random = new Random();
@@ -435,7 +443,6 @@ public class MapLoader {
 
         for (Room r : rooms) {
             r.placeRoom(stringMap);
-            r.placeGray(noiseSpace);
         }
         return rooms;
     }

@@ -74,15 +74,6 @@ public class Room {
         }
     }
 
-    public void placeGray(HashMap<MPoint, Double> noiseSpace){
-        for(MPoint wall : walls){
-            if(!doors.contains(wall)) {
-                MPoint temp = new MPoint(wall.x + offsetX, wall.y + offsetY);
-                noiseSpace.replace(temp, Double.MAX_VALUE);
-            }
-        }
-    }
-
     public boolean checkCollision(ArrayList<String> shadowMap){
         String wall = Arrays.toString(walls.toArray());
         //Logger.log("checkCollision: " + wall);

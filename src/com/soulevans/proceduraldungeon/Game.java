@@ -86,12 +86,14 @@ public class Game {
 
 //    View    ##########################################################################################################
 
+    public static boolean NOISE_MAP = false;
     public void drawGame(GraphicsContext gc){
         gc.getCanvas().setScaleX(scale);
         gc.getCanvas().setScaleY(scale);
         map.drawMap(gc);
 
-//        drawNoise(gc, 0.5);
+        if(NOISE_MAP)
+            drawNoise(gc, 0.5);
     }
 
     public void drawNoise(GraphicsContext gc, double opacity){
@@ -146,6 +148,11 @@ public class Game {
             Logger.log("[--------------Reset--------------]");
             init(width, height, canvas);
 //            this.savePNG();
+        }
+
+        if(event.getCode().getName().equals("N")){
+            NOISE_MAP = !NOISE_MAP;
+            Logger.log("[NOISE_MAP]: " + NOISE_MAP);
         }
 
         if(event.getCode().getName().equals("P")) {
