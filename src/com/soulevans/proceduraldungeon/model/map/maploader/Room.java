@@ -1,15 +1,13 @@
 package com.soulevans.proceduraldungeon.model.map.maploader;
 
 import com.soulevans.proceduraldungeon.Game;
+import com.soulevans.proceduraldungeon.config.MapConfig;
 import com.soulevans.proceduraldungeon.logger.LogType;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.map.Wall;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Room {
     public int offsetX;
@@ -21,6 +19,13 @@ public class Room {
     private ArrayList<MPoint> doors;
     private ArrayList<MPoint> enemies;
     private ArrayList<MPoint> chests;
+
+    private static final char WALL_CHAR = MapConfig.WALL_CHAR;
+    private static final char DOOR_CHAR = MapConfig.DOOR_CHAR;
+    private static final char CHEST_CHAR = MapConfig.CHEST_CHAR;
+    private static final char FLOOR_CHAR = MapConfig.FLOOR_CHAR;
+    private static final char ENEMY_CHAR = MapConfig.ENEMY_CHAR;
+    private static final char SHADOW_CHAR = MapConfig.SHADOW_CHAR;
 
     public Room(int w, int h){
         this(0, 0, w, h);
@@ -43,34 +48,34 @@ public class Room {
     public void placeRoom(ArrayList<String> stringMap){
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, '_', stringMap);
+                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, this.FLOOR_CHAR, stringMap);
             }
         }
         for(MPoint corner : corners){
-            MapLoader.replaceTile(this.offsetX + corner.x, this.offsetY + corner.y, '#', stringMap);
+            MapLoader.replaceTile(this.offsetX + corner.x, this.offsetY + corner.y, this.WALL_CHAR, stringMap);
         }
         for(MPoint wall : walls){
-            MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, '#', stringMap);
+            MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, this.WALL_CHAR, stringMap);
         }
         for(MPoint door : doors){
-            MapLoader.replaceTile(this.offsetX + door.x, this.offsetY + door.y, 'd', stringMap);
+            MapLoader.replaceTile(this.offsetX + door.x, this.offsetY + door.y, this.DOOR_CHAR, stringMap);
         }
         for(MPoint enemy : enemies){
-            MapLoader.replaceTile(this.offsetX + enemy.x, this.offsetY + enemy.y, 'e', stringMap);
+            MapLoader.replaceTile(this.offsetX + enemy.x, this.offsetY + enemy.y, this.ENEMY_CHAR, stringMap);
         }
         for(MPoint chest : chests){
-            MapLoader.replaceTile(this.offsetX + chest.x, this.offsetY + chest.y, 'c', stringMap);
+            MapLoader.replaceTile(this.offsetX + chest.x, this.offsetY + chest.y, this.CHEST_CHAR, stringMap);
         }
     }
 
     public void placeShadow(int border, ArrayList<String> shadowMap){
         for(int y = -border; y <= height+border; y++){
             for(int x = -border; x <= width+border; x++){
-                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, '¤', shadowMap);
+                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, this.SHADOW_CHAR, shadowMap);
             }
         }
         for(MPoint wall : walls){
-            MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, '#', shadowMap);
+            MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, this.WALL_CHAR, shadowMap);
         }
     }
 

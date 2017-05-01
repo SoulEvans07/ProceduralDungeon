@@ -1,5 +1,6 @@
 package com.soulevans.proceduraldungeon;
 
+import com.soulevans.proceduraldungeon.config.MapConfig;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
@@ -26,13 +27,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Game {
-    private double width, height;
     public static final double MAGNITUDE = 0.01;
     public static double scale = 1;
+
+    public static double TILESIZE = MapConfig.TILESIZE;
+
+    private double width, height;
     private VPoint centerMoved;
     private VPoint lastPos;
     private VPoint origo;
-    public static double TILESIZE = 16;
     public Canvas canvas;
 
     private DungeonMap map;
