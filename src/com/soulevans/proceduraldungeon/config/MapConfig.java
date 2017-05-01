@@ -17,10 +17,10 @@ public class MapConfig {
     public static int ROOM_ATTEMPTS = MAP_WIDTH;
     public static int MIN_ROOM_WIDTH = 3;
     public static int MIN_ROOM_HEIGHT = 3;
-    public static int ROOM_WIDTH_AMPT = 5;
-    public static int ROOM_HEIGHT_AMPT = 5;
+    public static int ROOM_WIDTH_AMPL = 5;
+    public static int ROOM_HEIGHT_AMPL = 5;
     public static int MIN_ROOM_DIST = 1;
-    public static int ROOM_DIST_AMPT = 2;
+    public static int ROOM_DIST_AMPL = 2;
 
     public static final char WALL_CHAR = '#';
     public static final char DOOR_CHAR = 'd';

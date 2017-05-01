@@ -37,10 +37,10 @@ public class MapLoader {
     private static int roomAttempt = MapConfig.ROOM_ATTEMPTS;
     private static int minWidth = MapConfig.MIN_ROOM_WIDTH;
     private static int minHeight = MapConfig.MIN_ROOM_HEIGHT;
-    private static int widthRange = MapConfig.ROOM_WIDTH_AMPT;
-    private static int heightRange = MapConfig.ROOM_HEIGHT_AMPT;
+    private static int widthRange = MapConfig.ROOM_WIDTH_AMPL;
+    private static int heightRange = MapConfig.ROOM_HEIGHT_AMPL;
     private static int minRoomDist = MapConfig.MIN_ROOM_DIST;
-    private static int roomDistRange = MapConfig.ROOM_DIST_AMPT;
+    private static int roomDistRange = MapConfig.ROOM_DIST_AMPL;
 
     private static final char WALL_CHAR = MapConfig.WALL_CHAR;
     private static final char DOOR_CHAR = MapConfig.DOOR_CHAR;
@@ -322,38 +322,45 @@ public class MapLoader {
         ArrayList<MPoint> open = new ArrayList<>();
         Dir lastDir = null;
 
+        // carve start
         replaceTile(start.x, start.y, FLOOR_CHAR, stringMap);
         open.add(start);
         maze.add(start);
 
         while(!open.isEmpty()){
-            MPoint cell = open.get(open.size()-1);    // cells.last
+            // get last open node
+            MPoint node = open.get(open.size()-1);
             ArrayList<Dir> dirs = new ArrayList<>();
 
+            // search for viable directions
             for(Dir dir : Dir.values()){
-                if(shouldCarve(cell, dir, stringMap))
+                if(shouldCarve(node, dir, stringMap))
                     dirs.add(dir);
             }
 
             if(dirs.size() > 0){
                 Dir dir;
+                // chose direction
                 if(dirs.contains(lastDir) && random.nextInt(100) > windinessPercent)
                     dir = lastDir;
                 else
                     dir = dirs.get(random.nextInt(dirs.size()));
 
-                MPoint one = cell.add(dir.value);
-                MPoint oneplus = cell.add(dir.mult(2));
-                replaceTile(one.x, one.y, FLOOR_CHAR, stringMap);
-                replaceTile(oneplus.x, oneplus.y, FLOOR_CHAR, stringMap);
+                MPoint next = node.add(dir.value);
+                MPoint secondnext = node.add(dir.mult(2));
 
-                maze.add(one);
-                maze.add(oneplus);
+                // carve node next and second next from it
+                replaceTile(next.x, next.y, FLOOR_CHAR, stringMap);
+                replaceTile(secondnext.x, secondnext.y, FLOOR_CHAR, stringMap);
+                maze.add(next);
+                maze.add(secondnext);
 
-                open.add(oneplus);
+                // prepare for next cycle
+                open.add(secondnext);
                 lastDir = dir;
             } else {
-                open.remove(open.size() - 1 );    // cells.removeLast
+                // remove node with no viable neighbour
+                open.remove(node);
                 lastDir = null;
             }
         }
