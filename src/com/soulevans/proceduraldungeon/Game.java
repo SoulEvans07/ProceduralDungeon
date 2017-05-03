@@ -49,7 +49,8 @@ public class Game {
         this.canvas = canvas;
 
         player = new Player(null, 1000);
-        map = MapLoader.loadRandom(2, player);
+//        map = MapLoader.loadRandom(2, player);
+        map = MapLoader.startFromMap(1, player);
 
         this.width = map.mapWidth * Game.TILESIZE; // View
         this.height = map.mapHeight * Game.TILESIZE; // View
@@ -158,10 +159,6 @@ public class Game {
             Logger.log("[NOISE_MAP]: " + NOISE_MAP);
         }
 
-        if(event.getCode().getName().equals("P")) {
-            this.savePNG();
-        }
-
         if(event.getCode().getName().equals("I")){
             Logger.log("[Inventory]");
             player.listInventory();
@@ -176,8 +173,6 @@ public class Game {
         Date date = new Date();
 
         File file = new File("printscreen\\"+dateFormat.format(date)+".png");
-        Logger.log("Printscreen: " + file.getName())
-        ;
         WritableImage writableImage = new WritableImage((int) width, (int) height);
         canvas.snapshot(null, writableImage);
         RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
@@ -194,6 +189,9 @@ public class Game {
 //        Logger.log(LogType.EVENT, "keyReleased: " + event.getCode().getName());
 //        player.onKeyReleased(event);
 //        map.removeDead();
+        if(event.getCode().getName().equals("P")) {
+            this.savePNG();
+        }
     }
 
 

@@ -71,8 +71,12 @@ public class Room {
     public void placeShadow(int border, ArrayList<String> shadowMap){
         for(int y = -border; y <= height+border; y++){
             for(int x = -border; x <= width+border; x++){
-                MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, this.SHADOW_CHAR, shadowMap);
+                if(MapLoader.getTile(this.offsetX + x, this.offsetY + y, shadowMap) == this.FLOOR_CHAR )
+                    MapLoader.replaceTile(this.offsetX + x, this.offsetY + y, this.SHADOW_CHAR, shadowMap);
             }
+        }
+        for(MPoint corner : corners){
+            MapLoader.replaceTile(this.offsetX + corner.x, this.offsetY + corner.y, this.WALL_CHAR, shadowMap);
         }
         for(MPoint wall : walls){
             MapLoader.replaceTile(this.offsetX + wall.x, this.offsetY + wall.y, this.WALL_CHAR, shadowMap);
