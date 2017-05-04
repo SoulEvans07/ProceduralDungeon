@@ -747,6 +747,7 @@ public class MapLoader {
 
             for (int x = 0; x < line.length(); x++) {
                 char c = line.charAt(x);
+                MPoint pos = new MPoint(x, y);
                 Tile tmp;
 
                 switch (c) {
@@ -757,7 +758,7 @@ public class MapLoader {
                         tmp = new Door(x, y);
                         break;
                     case CHEST_CHAR:
-                        tmp = new Chest(x, y, new Sword("Master Sword", 10000));
+                        tmp = new Chest(x, y, new Sword("Master Sword", 1000  + (int) Math.round(500 * (noiseSpace.get(pos) - 0.5))));
                         break;
                     case ENTRY_CHAR:
                         tmp = new EntryStair(x, y);
@@ -781,8 +782,9 @@ public class MapLoader {
             String line = stringMap.get(y);
             for (int x = 0; x < line.length(); x++) {
                 char c = line.charAt(x);
+                MPoint pos = new MPoint(x, y);
                 if (c == ENEMY_CHAR) {
-                    Enemy enemy = new Enemy(null, 600);
+                    Enemy enemy = new Enemy(null, 600 + (int) Math.round(100 * (noiseSpace.get(pos) - 0.5)) );
                     dungeon.addGameObject(x, y, enemy);
                 }
                 if (c == PLAYER_CHAR)
