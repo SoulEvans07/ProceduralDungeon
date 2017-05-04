@@ -49,8 +49,8 @@ public class Game {
         this.canvas = canvas;
 
         player = new Player(null, 1000);
-//        map = MapLoader.loadRandom(2, player);
-        map = MapLoader.startFromMap(1, player);
+        map = MapLoader.loadRandom(2, player);
+//        map = MapLoader.startFromMap(1, player);
 
         this.width = map.mapWidth * Game.TILESIZE; // View
         this.height = map.mapHeight * Game.TILESIZE; // View
@@ -97,7 +97,7 @@ public class Game {
         map.drawMap(gc);
 
         if(NOISE_MAP)
-            drawNoise(gc, 0.5);
+            drawNoise(gc, 1);
     }
 
     public void drawNoise(GraphicsContext gc, double opacity){

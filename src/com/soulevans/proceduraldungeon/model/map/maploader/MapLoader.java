@@ -306,6 +306,7 @@ public class MapLoader {
 
                     if(room != null) {
                         connectors.add(one);
+//                        room.addRelativeDoor(one.x - room.offsetX, one.y - room.offsetY);
                     }
                 }
             }
