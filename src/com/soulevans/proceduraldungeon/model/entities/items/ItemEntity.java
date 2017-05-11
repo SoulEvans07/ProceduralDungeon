@@ -19,7 +19,6 @@ public class ItemEntity extends GameObject{
 
     @Override
     public void drawObject(GraphicsContext gc) {
-//        gc.setFill(Color.valueOf("#a131bc"));
         gc.drawImage(item.getImage(),pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 

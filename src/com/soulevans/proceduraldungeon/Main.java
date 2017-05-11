@@ -53,7 +53,6 @@ public class Main extends Application {
         primaryStage.getScene().setOnMouseReleased(event -> Game.getInstance().onMouseReleased(event));
         primaryStage.getScene().setOnKeyPressed(event -> Game.getInstance().onKeyPressed(event));
         primaryStage.getScene().setOnKeyReleased(event -> Game.getInstance().onKeyReleased(event));
-        primaryStage.getScene().setOnScroll(event -> Game.getInstance().onScroll(event));
 
         init(this.graphicsContext);
         frames.setCycleCount(Timeline.INDEFINITE);
@@ -73,8 +72,6 @@ public class Main extends Application {
         clearCanvas(gc);
 
         Game.getInstance().drawGame(gc);
-
-        //frameRateMeter.drawFPS(gc, height);
     }
 
     private void clearCanvas(GraphicsContext gc){

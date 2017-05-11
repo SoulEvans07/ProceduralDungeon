@@ -11,6 +11,8 @@ public class ExitStair extends Tile{
         super(x, y);
     }
 
+    // TODO: make it a TileEntity and on interact move the player to the next level
+
     @Override
     public void drawTile(GraphicsContext gc) {
         gc.drawImage(image, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);

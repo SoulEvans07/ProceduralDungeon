@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DungeonMap {
+    // Model
     public Map<MPoint, Tile> map;
     public ArrayList<GameObject> entities;
     public int mapWidth;
@@ -56,10 +57,12 @@ public class DungeonMap {
         }
     }
 
+    //    Control    #######################################################################################################
+
     public ArrayList<VPoint> detect(Living viewer){
         int viewRange = viewer.getViewRange();
 
-        // TODO: fill list with the correct info .Soul
+        // TODO: fill list with the correct info
         return new ArrayList<>();
     }
 

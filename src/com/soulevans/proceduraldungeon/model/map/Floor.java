@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Floor extends Tile {
+    // View
     private static Image image = new Image("imgs/floor.png");
 
     public Floor(int x, int y){
@@ -17,14 +18,13 @@ public class Floor extends Tile {
         this.entity = entity;
     }
 
+    // View
     public static void drawFloor(GraphicsContext gc, int x, int y){
         gc.drawImage(image, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 
     @Override
     public void drawTile(GraphicsContext gc) {
-//        gc.setFill(Color.valueOf("#e8e8e8"));
-//        gc.fillRect(x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
         gc.drawImage(image, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 

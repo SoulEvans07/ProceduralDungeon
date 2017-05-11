@@ -12,14 +12,17 @@ import java.util.*;
 public class Room {
     public int offsetX;
     public int offsetY;
+
     public int width;
     public int height;
+
     public ArrayList<MPoint> corners;
     public ArrayList<MPoint> walls;
     private ArrayList<MPoint> doors;
     private ArrayList<MPoint> enemies;
     private ArrayList<MPoint> chests;
 
+    // TODO: remove these references
     private static final char WALL_CHAR = MapConfig.WALL_CHAR;
     private static final char DOOR_CHAR = MapConfig.DOOR_CHAR;
     private static final char CHEST_CHAR = MapConfig.CHEST_CHAR;
@@ -85,7 +88,7 @@ public class Room {
 
     public boolean checkCollision(ArrayList<String> shadowMap){
         String wall = Arrays.toString(walls.toArray());
-        //Logger.log("checkCollision: " + wall);
+
         for(MPoint w : walls){
             MPoint temp = new MPoint(w);
             temp.x += offsetX;
@@ -100,6 +103,7 @@ public class Room {
         return true;
     }
 
+    // Not used
     public void addEnemy(int x, int y){
         MPoint enemy = new MPoint(x, y);
         if(!walls.contains(enemy))
@@ -114,6 +118,7 @@ public class Room {
             Logger.log(LogType.ERROR, "Cannot place ENEMY, " + enemy + " in room " + this);
     }
 
+    // Not used
     public void addChest(int x, int y){
         MPoint chest = new MPoint(x, y);
         if(!walls.contains(chest))
@@ -142,7 +147,6 @@ public class Room {
     public boolean containsAbsoluteWall(MPoint cell){
         for(MPoint wall : walls){
             MPoint absWall = new MPoint(wall.x + offsetX, wall.y + offsetY);
-//            System.out.println("from: " + wall + " to: " + absWall + " check for: " + cell);
             if(absWall.equals(cell)) {
                 return true;
             }
@@ -155,14 +159,16 @@ public class Room {
         this.offsetY = y;
     }
 
+    // Not used
     public void randomDoor(){
         Random random = new Random();
         ArrayList<MPoint> temp = new ArrayList<>(walls);
-        temp.removeAll(doors); // you cant delete corners this way
+        // you cant delete corners this way
+        temp.removeAll(doors);
         // remove walls but not corners on the edge of the map
         for(int i = 4; i < walls.size(); i++){
             MPoint wall = walls.get(i);
-            if(wall.x+offsetX == 0 || wall.y+offsetY == 0 || wall.x+offsetX == MapLoader.width-1 || wall.y+offsetY == MapLoader.height-1){
+            if(wall.x+offsetX == 0 || wall.y+offsetY == 0 || wall.x+offsetX == MapConfig.MAP_WIDTH-1 || wall.y+offsetY == MapConfig.MAP_HEIGHT-1){
                 temp.remove(wall);
             }
         }

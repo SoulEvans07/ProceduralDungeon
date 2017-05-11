@@ -17,17 +17,21 @@ public class Enemy extends Living {
 
     @Override
     public void drawObject(GraphicsContext gc){ // View
-        gc.setFill(Color.RED);
-        gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE, Game.TILESIZE*0.2);
-        gc.setFill(Color.GREEN);
-        gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE * ((double)healthPoints / (double)baseHP), Game.TILESIZE*0.2);
+        drawHealthBar(gc);
 
         gc.drawImage(image, pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 
+    public void drawHealthBar(GraphicsContext gc){
+        gc.setFill(Color.RED);
+        gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE, Game.TILESIZE*0.2);
+        gc.setFill(Color.GREEN);
+        gc.fillRect(pos.x * Game.TILESIZE, pos.y * Game.TILESIZE - Game.TILESIZE*0.4, Game.TILESIZE * ((double)healthPoints / (double)baseHP), Game.TILESIZE*0.2);
+    }
+
     @Override
     public void tick() {
-
+        // TODO: [LATER] implement Enemy AI
     }
 
     @Override

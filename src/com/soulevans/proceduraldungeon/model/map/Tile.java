@@ -8,7 +8,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public abstract class Tile {
+    // View
     protected static Image image;
+
+    // Model
     public int x;
     public int y;
 
@@ -19,6 +22,7 @@ public abstract class Tile {
 
     protected GameObject entity;
 
+    // Control
     public Item pickUpItem(){
         Item returnItem = null;
         if(entity != null && entity instanceof ItemEntity){
@@ -29,6 +33,7 @@ public abstract class Tile {
         return returnItem;
     }
 
+    // Model
     public void setEntity(GameObject entity){
         this.entity = entity;
     }
@@ -41,5 +46,6 @@ public abstract class Tile {
         return entity;
     }
 
-    public abstract void drawTile(GraphicsContext gc); // View
+    // View
+    public abstract void drawTile(GraphicsContext gc);
 }

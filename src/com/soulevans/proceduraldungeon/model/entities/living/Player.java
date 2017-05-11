@@ -23,11 +23,11 @@ public class Player extends Living {
         gc.drawImage(image, pos.x * Game.TILESIZE, pos.y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 
+    // Control
     public void onKeyReleased(KeyEvent event){
         String key = event.getCode().getName();
 
         if(!"WASD".toLowerCase().contains(key.toLowerCase())) {
-//            Logger.log("[KEY] " + key);
             return;
         }
 
@@ -35,7 +35,7 @@ public class Player extends Living {
 
         Tile tile = Game.getInstance().getMap().getTile(pos.x + dir.x, pos.y + dir.y);
         if(tile == null)
-            // empty cell, no action taken
+            // empty cell, no action needed
             return;
 
         GameObject entity = tile.getEntity();
@@ -60,7 +60,6 @@ public class Player extends Living {
             if(tile instanceof Floor)
                 this.step(tile);
         } else {
-//            Logger.log(entity.toString());
             if(entity instanceof Enemy){
                 this.attack((Enemy) entity);
             }
@@ -68,11 +67,12 @@ public class Player extends Living {
                 this.inventory.add(tile.pickUpItem());
 
                 this.step(tile);
-                // TODO: Living inventory
+                // TODO: give Living inventory
             }
         }
     }
 
+    // TODO: use Dir class
     private MPoint getKeyDir(String key){
         MPoint dir = new MPoint(0, 0);
         switch (key){
@@ -89,7 +89,9 @@ public class Player extends Living {
     }
 
     @Override
-    public void tick(){}
+    public void tick(){
+        // poison wears off, etc
+    }
 
     @Override
     public String toString() {

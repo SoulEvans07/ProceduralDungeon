@@ -1,3 +1,7 @@
 .idea/
 out/
 printscreen*/
+*.csv
+_data_old/
+data/
+_printscreen_old/

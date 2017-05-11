@@ -20,7 +20,8 @@ public class Sword extends Weapon {
 
     @Override
     public Damage getDamage(Living user){
-        // TODO: calculate damage from user and weapon
+        // TODO: needs rework - unite with other tools: target and user as params
+        // TODO: [LATER] calculate damage from user and weapon
         Random random = new Random();
         int value = (int) (baseDamage *0.9) + random.nextInt((int) (baseDamage*0.1));
 

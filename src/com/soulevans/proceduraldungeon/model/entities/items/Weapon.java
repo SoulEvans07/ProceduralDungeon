@@ -4,6 +4,7 @@ import com.soulevans.proceduraldungeon.model.damage.Damage;
 import com.soulevans.proceduraldungeon.model.damage.DamageType;
 import com.soulevans.proceduraldungeon.model.entities.living.Living;
 
+// TODO: after Tool, link this to it.
 public abstract class Weapon extends Item{
     protected DamageType damageType;
     protected int baseDamage;

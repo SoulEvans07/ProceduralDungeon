@@ -1,4 +1,6 @@
-package com.soulevans.proceduraldungeon.model.base;
+package com.soulevans.proceduraldungeon.misc;
+
+import com.soulevans.proceduraldungeon.model.base.VPoint;
 
 import java.util.ArrayList;
 

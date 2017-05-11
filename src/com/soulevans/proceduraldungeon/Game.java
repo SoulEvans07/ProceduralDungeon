@@ -1,6 +1,7 @@
 package com.soulevans.proceduraldungeon;
 
 import com.soulevans.proceduraldungeon.config.MapConfig;
+import com.soulevans.proceduraldungeon.logger.LogType;
 import com.soulevans.proceduraldungeon.logger.Logger;
 import com.soulevans.proceduraldungeon.model.base.MPoint;
 import com.soulevans.proceduraldungeon.model.base.VPoint;
@@ -15,12 +16,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,7 @@ public class Game {
 
         player = new Player(null, 1000);
         map = MapLoader.loadRandom(2, player);
+//        map = MapLoader.loadMap(3, player);
 //        map = MapLoader.startFromMap(1, player);
 
         this.width = map.mapWidth * Game.TILESIZE; // View
@@ -57,7 +60,6 @@ public class Game {
 
         scale = 1.0;
         centerMoved = new VPoint(0, 0);
-        //lastPos = new VPoint(0, 0);
         origo = new VPoint(width/2, height/2);
         canvas.setTranslateX(centerMoved.x);
         canvas.setTranslateY(centerMoved.y);
@@ -118,23 +120,19 @@ public class Game {
     }
 
     public static void zoom(String z){
-//        if(z.equals("Add")) {
-//            scale += MAGNITUDE;
-//        }
-//        if(z.equals("Minus") || z.equals("Subtract")) {
-//            scale -= MAGNITUDE;
-//        }
+        if(z.equals("Add")) {
+            scale += MAGNITUDE;
+        }
+        if(z.equals("Minus") || z.equals("Subtract")) {
+            scale -= MAGNITUDE;
+        }
     }
 
     private static void zoom(double scroll){
         scale += MAGNITUDE * scroll;
     }
 
-//    private void updateLast(double eventx, double eventy){
-//        lastPos = new VPoint(eventx - origo.x, - eventy + origo.y);
-//    }
-
-    private VPoint translate(VPoint vect){
+    private VPoint translatePoint(VPoint vect){
         return new VPoint(
                 -origo.x + centerMoved.x + vect.x,
                 -origo.y + centerMoved.y + vect.y
@@ -145,13 +143,78 @@ public class Game {
 //    Control    #######################################################################################################
 
     public void onKeyPressed(KeyEvent event){
-//        Logger.log(LogType.EVENT, "keyPressed: " + event.getCode().getName());
+        Logger.logDebug(LogType.EVENT, "keyPressed: " + event.getCode().getName());
         Game.zoom(event.getCode().getName());
 
         if(event.getCode().getName().equals("R")) {
-            Logger.log("[--------------Reset--------------]");
+            Logger.logDebug("[--------------Reset--------------]");
             init(width, height, canvas);
-//            this.savePNG();
+        }
+
+        // FILL_DEAD_END test cases.
+        // fills dead ends one by one
+        if(event.getCode().getName().equals("H")){
+            MapLoader.fillDeadEndStep(MapLoader._mazeCells, MapLoader._mazes, MapLoader._stringMap);
+            map = MapLoader.loadStringMap(MapLoader._stringMap, player);
+            mapSnapshot(false, MapLoader._mazeCells.size()+"_left");
+            canvas.setVisible(true);
+        }
+
+        player.onKeyReleased(event);
+        map.removeDead();
+    }
+
+    public void onKeyReleased(KeyEvent event){
+        Logger.logDebug(LogType.EVENT, "keyReleased: " + event.getCode().getName());
+        if(event.getCode().getName().equals("P")) {
+            this.savePNG(true, null);
+        }
+
+        // Minimum ROOM_ATTEMTS test case
+        // checks from 15x15 to 99x99 whats the most room it can fit in
+        // room size amplitude is 1/4 of the map size.
+        // writes date to corresponding .csv file
+        if(event.getCode().getName().equals("J")) {
+            for(int size = 15; size < 100; size+=2) {
+                MapConfig.MAP_WIDTH = MapConfig.MAP_HEIGHT = size;
+                MapConfig.MIN_ROOM_WIDTH = MapConfig.MIN_ROOM_HEIGHT = 3;
+                MapConfig.MIN_ROOM_DIST = 1;
+                MapConfig.ROOM_WIDTH_AMPL = MapConfig.ROOM_HEIGHT_AMPL = size/4;
+                for (int i = 0; i < 50; i++) {
+                    init(width, height, canvas);
+                    MapConfig.writeRoomAttemptsFile();
+                }
+            }
+        }
+
+        // Minimum ROOM_ATTEMTS test case
+        // checks from 15x15 to 99x99 whats the most room it can fit in
+        // works with the smallest roomsize 3x3 with 1 distance between them.
+        if(event.getCode().getName().equals("K")) {
+            for(int size = 15; size < 100; size+=2) {
+                MapConfig.MAP_WIDTH = MapConfig.MAP_HEIGHT = size;
+                MapConfig.ROOM_ATTEMPTS = MapConfig.getOptimalRoomAttempts();
+                MapConfig.MIN_ROOM_WIDTH = MapConfig.MIN_ROOM_HEIGHT = 3;
+                MapConfig.MIN_ROOM_DIST = 1;
+                MapConfig.ROOM_WIDTH_AMPL = MapConfig.ROOM_HEIGHT_AMPL = 0;
+                init(width, height, canvas);
+                Logger.logFile("maxRoom.txt", "[" + size + "; " + size +"] max Room: " +MapConfig.ROOMS_MADE);
+            }
+        }
+
+        // WINDINESS_PERCENT test case
+        // makes snapshots from different values of windiness
+        if(event.getCode().getName().equals("L")) {
+            MapConfig.MAP_WIDTH = MapConfig.MAP_HEIGHT = 37;
+            MapConfig.ROOM_ATTEMPTS = MapConfig.getOptimalRoomAttempts();
+            MapConfig.MIN_ROOM_WIDTH = MapConfig.MIN_ROOM_HEIGHT = 3;
+            MapConfig.MIN_ROOM_DIST = 1;
+            MapConfig.ROOM_WIDTH_AMPL = MapConfig.ROOM_HEIGHT_AMPL = 37/4;
+            for(int windy = 0; windy <= 100; windy+=10) {
+                MapConfig.WINDINESS_PERCENT = windy;
+                init(width, height, canvas);
+                mapSnapshot(true, windy+"_windi");
+            }
         }
 
         if(event.getCode().getName().equals("N")){
@@ -163,48 +226,15 @@ public class Game {
             Logger.log("[Inventory]");
             player.listInventory();
         }
-
-        player.onKeyReleased(event);
-        map.removeDead();
     }
-
-    public void savePNG(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HHmmss");
-        Date date = new Date();
-
-        File file = new File("printscreen\\"+dateFormat.format(date)+".png");
-        WritableImage writableImage = new WritableImage((int) width, (int) height);
-        canvas.snapshot(null, writableImage);
-        RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
-        try {
-            ImageIO.write(renderedImage, "png", file);
-            Logger.log("Printscreen: " + file.getName());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Logger.log("Printscreen failed!");
-        }
-    }
-
-    public void onKeyReleased(KeyEvent event){
-//        Logger.log(LogType.EVENT, "keyReleased: " + event.getCode().getName());
-//        player.onKeyReleased(event);
-//        map.removeDead();
-        if(event.getCode().getName().equals("P")) {
-            this.savePNG();
-        }
-    }
-
 
     public void onMousePressed(MouseEvent event){
-//        Logger.log(LogType.EVENT,"mousePressed [" + event.getX() + ", " + event.getY() + "]");
+        Logger.logDebug(LogType.EVENT,"mousePressed [" + event.getX() + ", " + event.getY() + "]");
         lastPos = new VPoint(event.getX(), event.getY());
     }
 
     public void onMouseDragged(MouseEvent event){
-//        Logger.log(LogType.EVENT,"mouseDragged [" + event.getX() + ", " + event.getY() + "]");
-//        Logger.log(LogType.EVENT, "move from: " +lastPos+ ", to: " +now);
-//        Logger.log(LogType.EVENT, "move: [" + (now.x - lastPos.x) + ", " + (now.y - lastPos.y)+ "]");
-//        Logger.log(LogType.EVENT, "move: [" + event.getX() + ", " + event.getY() + "]");
+        Logger.logDebug(LogType.EVENT,"mouseDragged [" + event.getX() + ", " + event.getY() + "]");
 
         VPoint now = new VPoint(event.getX(), event.getY());
         centerMoved = new VPoint(centerMoved.x + (now.x - lastPos.x), centerMoved.y + (now.y - lastPos.y));
@@ -214,43 +244,46 @@ public class Game {
     }
 
     public void onMouseReleased(MouseEvent event){
-//        Logger.log(LogType.EVENT,"mouseReleased");
+        Logger.logDebug(LogType.EVENT,"mouseReleased");
     }
 
-    public void onScroll(ScrollEvent event){
-//        Logger.log(LogType.EVENT,"scroll: " + event.getTextDeltaY());
-//        Logger.log(LogType.EVENT,"scrollon: [" + event.getX() + ", " + event.getY() + "][" + centerMoved.x + ", " + centerMoved.y + "]");
-//        zoom(event.getTextDeltaY());
-//
-//        double distDiff = scale - 1.0;
-//        VPoint now = new VPoint(event.getX(), event.getY());
-//
-//        VPoint diff = new VPoint(origo.x - now.x,origo.y - now.y);
-//        diff.x *= distDiff;
-//        diff.y *= distDiff;
-//
-//        canvas.setTranslateX(centerMoved.x + diff.x);
-//        canvas.setTranslateY(centerMoved.y + diff.y);
-//
-////        now = translate(now);
-////        origo = new VPoint(width/2 * scale, height/2 * scale);
-//
-////
-////        System.out.println("------------------------------------------");
-////        System.out.println("canvas: ["+ width+", "+height+"]");
-////        System.out.println("window: [800, 800]");
-////        System.out.println("D: "+diff);
-////        System.out.println("scale: " + scale + " distDiff: " + distDiff);
-//
-////        System.out.println("deltaD: " + diff);
-////        System.out.println("last: "+lastPos);
-////        System.out.println("center bef: "+centerMoved);
-////
-////        centerMoved.x += diff.x;
-////        centerMoved.y += diff.y;
-////        lastPos = now;
-////
-////        System.out.println("center aft: "+centerMoved);
-////        System.out.println("new: "+lastPos);
+    private void mapSnapshot(boolean log, Object stamp){
+        canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
+        map.drawMap(canvas.getGraphicsContext2D());
+        savePNG(log, stamp);
+    }
+
+    public void savePNG(boolean log, Object stamp){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HHmmss");
+        Date date = new Date();
+
+        File saveFolder = new File("printscreen");
+        if(!saveFolder.exists() && !saveFolder.isDirectory())
+            saveFolder.mkdir();
+
+        String stampString = stamp == null ? "" : " "+stamp.toString();
+        File file = new File("printscreen\\"+dateFormat.format(date) + stampString +".png");
+        WritableImage writableImage = new WritableImage((int) width, (int) height);
+        canvas.snapshot(null, writableImage);
+        RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+        try {
+            ImageIO.write(renderedImage, "png", file);
+            Logger.log("Printscreen: " + file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.log("Printscreen failed!");
+        }
+
+        if(log) {
+            File logFile = new File("printscreen\\"+dateFormat.format(date) + stampString + ".txt");
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile))) {
+                MapConfig.saveConfig(writer);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Logger.log("Printscreen Log failed!");
+            }
+        }
     }
 }

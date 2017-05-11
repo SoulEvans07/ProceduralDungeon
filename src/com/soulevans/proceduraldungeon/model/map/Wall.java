@@ -12,10 +12,10 @@ public class Wall extends Tile {
         super(x, y);
     }
 
+    // TODO: step on function that prevents stepping on wall
+
     @Override
     public void drawTile(GraphicsContext gc) {
-//        gc.setFill(Color.valueOf("#666666"));
-//        gc.fillRect(x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
         gc.drawImage(image, x * Game.TILESIZE, y *Game.TILESIZE, Game.TILESIZE, Game.TILESIZE);
     }
 }
